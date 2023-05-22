@@ -3,10 +3,18 @@
 Firmware for an IoT thing which monitors the pollution in the air. 
 
 ## Project Setup
-First Make sure to have all dependencies set up. If not check the section below. Then, after everything has been installed correctly do as follows:
-- Open Visual Studio Code (VSCode) by typing ***code*** from the Developer Command Prompt for VS 2022 (Do not get confused with the normal command console).
+First Make sure to have all dependencies set up. If not check the Windowa Setup Dependencies section (You have to do this only once). Then, after everything has been installed correctly do as follows:
+- Clone the git repository in your desired folder using 
+```
+git clone https://github.com/Figuejojo/SmartAirPollutionMonitor.git 
+``` 
+- Then to clone inside the folder where the project was created, run the following command.
+```
+git submodule update --init --recursive
+```
+- Open Visual Studio Code (VSCode) by typing ***code*** from the ***Developer Command Prompt for VS ...*** (Do not confuse it with the normal command console).
 - Open the folder of the project in VSCode
-- Choose the GCC arm-none-eabi most recent version. Change this below if *No kit* is displayed otherwise.
+- Choose the GCC arm-none-eabi most recent version (10.3.1 when this was written). Change it below if *No kit* is displayed otherwise.
 - Then click the *Build* buttom to build the project.
 
 ## Load the program
