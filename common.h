@@ -15,10 +15,14 @@
 #include <FreeRTOS-Kernel/include/queue.h>
 #include <task.h>
 #include <stdio.h>
+#include <stdint.h>
 #include "pico/stdlib.h"
 
 /*******************************************************************************
 * Type definitions
 *******************************************************************************/
+#define ENABLE_DEBUG (1)
+#define DEBUGMSG_SIZE (20)
+
 
 #endif //_COMMON_H_

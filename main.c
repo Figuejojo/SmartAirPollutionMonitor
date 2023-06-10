@@ -1,30 +1,81 @@
+/** @file Main.c
+ *  @brief This is the main file of the Smart Air Pollution Monitor.
+ *
+ *  @author Y3913624
+ */
+
+
+/*******************************************************************************
+* Includes
+*******************************************************************************/
 #include "common.h"
 
-QueueHandle_t xQueue1;
+/*******************************************************************************
+* Static Global Variables
+*******************************************************************************/
+QueueHandle_t qDebugPrint;
 
-void led_task()
-{   
+/*******************************************************************************
+* Function Declaration
+*******************************************************************************/
+void TaskDebugPrint(void * pvParameters);
+void TaskLEDBlinkvoid(void * pvParameters);
 
-    const uint LED_PIN = 3;
-    gpio_init(LED_PIN);
-    gpio_set_dir(LED_PIN, GPIO_OUT);
-    while (true) {
-        gpio_put(LED_PIN, 1);
-        vTaskDelay(500/portTICK_PERIOD_MS); // Ticks to delay
-        gpio_put(LED_PIN, 0);
-        vTaskDelay(500/portTICK_PERIOD_MS);
-        printf("Blinking!\r\n");
-    }
-}
+/*******************************************************************************
+* Function Definition
+*******************************************************************************/
 
+/**
+	*	@name main
+	*   @Type Main Function
+*/
 int main()
 {
-    stdio_init_all();
+    //*** Hardware Initializations (If needed) ***/
 
-    xQueue1 = xQueueCreate(10, sizeof(int));
+    //*** FreeRTOS tASKS ***/
+    xTaskCreate(TaskLEDBlinkvoid,"Ledblink",256,NULL,1,NULL);
+#if ENABLE_DEBUG // Only if the debug flag is set.
+    xTaskCreate(TaskDebugPrint, "DebugUSBPrint", 256, NULL, 1, NULL);
+#endif
 
-    xTaskCreate(led_task, "LED_Task", 256, NULL, 1, NULL);
+    //Start FreeRTOS
     vTaskStartScheduler();
 
     while(1){};
+}
+
+/**
+	*	@name Debug_Print
+	*   @Type Task
+*/
+void TaskDebugPrint(void * pvParameters)
+{   
+    stdio_init_all();
+    qDebugPrint = xQueueCreate(10, sizeof(int8_t)*DEBUGMSG_SIZE);
+    int8_t msg[DEBUGMSG_SIZE];
+    while (true) {
+        xQueueReceive(qDebugPrint,msg,portMAX_DELAY);
+        printf("%s\r\n",msg);
+    }
+}
+
+/**
+	*	@name Debug_LEDBlink 
+	*   @Type Example Task
+*/
+void TaskLEDBlinkvoid(void * pvParameters)
+{
+    const uint8_t LED_PIN = 3;
+    gpio_init(LED_PIN);
+    gpio_set_dir(LED_PIN, GPIO_OUT);
+    int8_t msg[] = "DebugCycle";
+    while(true)
+    {
+        vTaskDelay(500/portTICK_PERIOD_MS);
+        gpio_put(LED_PIN,1);
+        vTaskDelay(500/portTICK_PERIOD_MS);
+        gpio_put(LED_PIN,0);
+        xQueueSendToBack(qDebugPrint,&msg,0);
+    }
 }
