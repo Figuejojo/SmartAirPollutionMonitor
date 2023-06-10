@@ -2,6 +2,10 @@
 
 Firmware for an IoT thing which monitors the pollution in the air. 
 
+## Project Debug
+To enabe the print as a DEBUG method, check the ```common.h``` file and set ```ENABLE_DEBUG``` to ```1```. 
+The prefered tools is [Putty](https://www.putty.org/) but you can use whatever tool you want. The baudrate is ```115200```.
+
 ## Project Setup
 First Make sure to have all dependencies set up. If not check the Windowa Setup Dependencies section (You have to do this only once). Then, after everything has been installed correctly do as follows:
 - Clone the git repository in your desired folder using 
