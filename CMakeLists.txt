@@ -13,15 +13,15 @@ pico_sdk_init()
 
 # Subdirectories
 add_subdirectory(freertos)
+add_subdirectory(SAPMS)
 
 # rest of your project
 add_executable(SAPM
-    common.h
     main.c
 )
 
 # Add pico_stdlib library which aggregates commonly used features
-target_link_libraries(SAPM pico_stdlib freertos)
+target_link_libraries(SAPM pico_stdlib freertos SAPMS)
 
 # Enable usb output, disable uart output
 pico_enable_stdio_usb(${PROJECT_NAME} 1)
