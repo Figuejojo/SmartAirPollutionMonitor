@@ -24,5 +24,4 @@
 #define ENABLE_DEBUG (1)
 #define DEBUGMSG_SIZE (20)
 
-
 #endif //_COMMON_H_

@@ -4,11 +4,11 @@
  *  @author Y3913624
  */
 
-
 /*******************************************************************************
 * Includes
 *******************************************************************************/
 #include "common.h"
+#include "bapi_I2C0.h"
 
 /*******************************************************************************
 * Static Global Variables
@@ -33,7 +33,11 @@ int main()
 {
     //*** Hardware Initializations (If needed) ***/
 
+    //*** Queues Creation
+    qDebugPrint = xQueueCreate(10, sizeof(int8_t)*DEBUGMSG_SIZE);
+
     //*** FreeRTOS tASKS ***/
+    xTaskCreate(vTask_AM2320,"TempAndHumd",256,NULL,1,NULL);
     xTaskCreate(TaskLEDBlinkvoid,"Ledblink",256,NULL,1,NULL);
 #if ENABLE_DEBUG // Only if the debug flag is set.
     xTaskCreate(TaskDebugPrint, "DebugUSBPrint", 256, NULL, 1, NULL);
@@ -52,7 +56,6 @@ int main()
 void TaskDebugPrint(void * pvParameters)
 {   
     stdio_init_all();
-    qDebugPrint = xQueueCreate(10, sizeof(int8_t)*DEBUGMSG_SIZE);
     int8_t msg[DEBUGMSG_SIZE];
     while (true) {
         xQueueReceive(qDebugPrint,msg,portMAX_DELAY);
