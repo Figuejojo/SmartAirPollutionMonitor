@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 
 set(SAPMS_SRCS
-    bapi_I2C0.c
+    AM2320.c
 )
 
 add_library(SAPMS ${SAPMS_SRCS})

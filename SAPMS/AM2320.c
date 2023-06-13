@@ -1,18 +1,18 @@
 /** @file bapiI2C0.c
  *  @brief This is the main file for I2C.
- *          Currently it is also for AM232 
+ *          Currently it is also for AM2320 
  *          TODO: Verify if the current structure is good or
- *                  Create an independent folder for AM232
+ *                  Create an independent folder for AM2320
  *
  *  @author Y3913624
  */
 
-#include "bapi_I2C0.h"
+#include "AM2320.h"
 
 extern QueueHandle_t qDebugPrint;
 
 /**
-	*	@name vTask_AM2320
+	*	@name vTask_AM23200
 	*   @Type Void Task 
 */
 void vTask_AM2320(void * pvParameters)

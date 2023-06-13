@@ -1,14 +1,14 @@
 /** @file bapiI2C0.h
  *  @brief This is the main file for I2C.
- *          Currently it is also for AM232 
+ *          Currently it is also for AM2320 
  *          TODO: Verify if the current structure is good or
- *                  Create an independent folder for AM232
+ *                  Create an independent folder for AM2320
  *
  *  @author Y3913624
  */
 
-#ifndef _BAPI_I2C0_H_
-#define _BAPI_I2C0_H_
+#ifndef _bapi_I2C0_H_
+#define _bapi_I2C0_H_
 
 #include "common.h"
 #include "hardware/i2c.h"
@@ -25,4 +25,4 @@
   */
 void vTask_AM2320(void * pvParameters);
 
-#endif //_BAPI_I2C0_H_
+#endif //_bapi_I2C0_H_
