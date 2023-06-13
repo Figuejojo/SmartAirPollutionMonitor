@@ -1,52 +1,96 @@
 # Smart Air Pollution Monitor
+Firmware for an Smart IoT Air Pollution Monitor dissertation project for the University of York by the MSc Emedded Wireless System 22/23.
 
-Firmware for an IoT thing which monitors the pollution in the air. 
+- [1 Project Setup](#ProjectSetup)
+ - [1.1 Dependencies](#Dependencies)
+ - [1.2 Project Structure](#PStructure)
+   - [1.2.1 SDK Setup](#SDKSetup)
+   - [1.2.2 Project Setup](#PSetup)
+- [2 Project Development](#PDev)
+	- [2.1 Project Debug](#PDebug)
+	- [2.2 Load the program](#LoadProgram)
+- [3 References](#Ref)
 
-## Project Debug
-To enabe the print as a DEBUG method, check the ```common.h``` file and set ```ENABLE_DEBUG``` to ```1```. 
-The prefered tools is [Putty](https://www.putty.org/) but you can use whatever tool you want. The baudrate is ```115200```.
+   
+<a name="ProjectSetup"></a>
+## 1 Project Setup
+The Project Setup consist in Downloading all the dependencies, clonning the SDK, clonning this git project and putting all together for it to build.
 
-## Project Setup
-First Make sure to have all dependencies set up. If not check the Windowa Setup Dependencies section (You have to do this only once). Then, after everything has been installed correctly do as follows:
-- Clone the git repository in your desired folder using 
+<a name="Dependencies"></a>
+### 1.1 Dependencies 
+The following links are the direct download link. You can refer to this [link](https://vanhunteradams.com/Pico/Setup/PicoSetup.html) on how to install everything.
+- Install [ARM GCC Compiler](https://developer.arm.com/-/media/Files/downloads/gnu-rm/10.3-2021.10/gcc-arm-none-eabi-10.3-2021.10-win32.exe?rev=29bb46cfa0434fbda93abb33c1d480e6&hash=B2C5AAE07841929A0D0BF460896D6E52s) version 10.3.
+- Install [CMake](https://github.com/Kitware/CMake/releases/download/v3.27.0-rc2/cmake-3.27.0-rc2-windows-x86_64.msi) version 3.27 for Windows x64.
+- Install [GIT](https://github.com/git-for-windows/git/releases/download/v2.41.0.windows.1/Git-2.41.0-64-bit.exe) version 2.41 for Windows x64.
+- Install [Visual Studio Code (VSCode)](https://code.visualstudio.com/docs/?dv=win)
+- Install [Python 3](https://www.python.org/ftp/python/3.11.4/python-3.11.4-amd64.exe) Version 3.11.4 for Windows x64
+- Install [Build Tools for Visual Studio](https://aka.ms/vs/17/release/vs_BuildTools.exe)
+For the Visual Studio Tools you must check C++ Build Tools with the following elements:
+ - MSCV
+ - Windows 10 or 11 SDK (Depeding on your computer)
+ - C++ Cmake Tools for Windows
+ - Testing tools core features - Build Tools
+ - C++ AddressSanitizer
+
+
+ <a name="PStructure"></a>
+### 1.2 Project Structure
+For the project to build correctly, it must have the same folder structure as bellow. Here pico-sdk and SmartAirPollutionMonitor are git repositories downloaded inside the same folder.
 ```
-git clone https://github.com/Figuejojo/SmartAirPollutionMonitor.git 
+Project Folder
+    +-- pico-sdk
+	+-- SmartAirPollutionMonitor
+```
+
+
+ <a name="SDKSetup"></a>
+#### 1.2.1 SDK Setup
+Clone the SDK repository from the raspberry pi pico github inside your preferred folder. To do so, open a command prompt (CMD) and navigate to your folder. Then execute the following command.
+
+```shell
+C:\Path\YourFolder> git clone -b master https://github.com/raspberrypi/pico-sdk.git
 ``` 
-- Then to clone inside the folder where the project was created, run the following command.
+Then, change the location of your CMD to be inside the newly cloned folder called pico-sdk. Then execute the following command.
+```shell
+C:\Path\YourFlder\pico-sdk> git submodule update --init
 ```
-git submodule update --init --recursive
-```
-- Open Visual Studio Code (VSCode) by typing ***code*** from the ***Developer Command Prompt for VS ...*** (Do not confuse it with the normal command console).
-- Open the folder of the project in VSCode
-- Choose the GCC arm-none-eabi most recent version (10.3.1 when this was written). Change it below if *No kit* is displayed otherwise.
-- Then click the *Build* buttom to build the project.
 
-## Load the program
+ <a name="PSetup"></a>
+#### 1.2.2 Project Setup
+First Make sure to have all dependencies installed correctly. If not check the Windowa Setup Dependencies section or the references at the end. Then, after everything has been installed correctly do as follows:
+1.  Clone the git repository in your desired folder using 
+```shell
+C:\Path\YourProject> git clone https://github.com/Figuejojo/SmartAirPollutionMonitor.git
+``` 
+2. Get all the submodules clone inside the project, run the following command inside the Smart Air Pollution Monitor Folder created above:
+```shell
+C:\Path\YourProject\SmartAirPollutionMonitor> git submodule update --init --recursive
+```
+3. Open Visual Studio Code (VSCode) by typing ***code*** from the ***Developer Command Prompt for VS ...*** (Do not confuse it with the normal command console).
+4. Open the Smart Air Pollution Monitor project folder in VSCode
+5. Choose the GCC arm-none-eabi most recent version (10.3.1 when this was written). If it didint gave you the option click where *No kit* is showned below.
+6. Then click the *Build* buttom to build the project. If you got any issues please refer to the references section.
+7. Finally if it build correcly you must see a build folder inside the project with a file named: ```SAPM.uf2```
+
+
+ <a name="PDev"></a>
+## 2 Project Development
+Now that everything is setup, this section has details on how to debug and load the program into the Raspberry pi pico-w.
+
+ <a name="PDebug"></a>
+### 2.1 Project Debug
+To enabe the print as a DEBUG method, check the ```SAPMS\common.h``` file and set ```ENABLE_DEBUG``` to ```1```. 
+The prefered Serial COM tool is [Putty](https://www.putty.org/) and the baudrate is set at ```115200```.
+
+<a name="LoadProgram"></a>
+### 2.2 Load the program
 First, put the Raspberry Pi Pico into mass storage mode by clicking the *BOOT* button and then connecting it to the computer. Then check the build folder for a SAPM.uf2 file and drag it into the RPI-RP2 device folder.  
 
-## Windows Setup Dependencies
-
+<a name="Ref"></a>
+## 3 References
 For the installation of dependencies and SDK setup please refer to:
 - Raspberry Pi Getting Starting Guide [link](https://datasheets.raspberrypi.com/pico/getting-started-with-pico.pdf)
 - Setting Up RP pico in Windows [link](https://vanhunteradams.com/Pico/Setup/PicoSetup.html)
-
-### Dependencies Download Links
-- Install [ARM GCC Compiler](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads). 
-- Install [CMake](https://cmake.org/download/)
-- Install [GIT](https://git-scm.com/download/win)
-- Install [Build Tools for Visual Studio](https://visualstudio.microsoft.com/downloads/)
-- Install [Visual Studio Code (VSCode)](https://visualstudio.microsoft.com/downloads/)
-- Install [Python 3](https://www.python.org/downloads/windows/)
-
-### SDK Setup
-Clone the SDK repository from the raspberry pi pico github inside your preferred folder. To do so, open a command prompt (CMD) and navigate to your folder. Then execute the following command.
-
-    git clone -b master https://github.com/raspberrypi/pico-sdk.git
-Then, change the location of your CMD to be inside the newly cloned folder called pico-sdk. Then execute the following command.
-
-    git submodule update --init
-
-Now create a new environmental variable named **PICO_SDK_PATH** with the direction path of the SDK folder as *value*.
 
 # License
 
