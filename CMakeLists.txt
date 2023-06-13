@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.13)
 
 # initialize the SDK based on PICO_SDK_PATH
-set(PICO_SDK_PATH "C:\\xLibs\\pico\\pico-sdk") 
+set(PICO_SDK_PATH "..\\..\\pico-sdk") 
 set(PICO_BOARD "pico_w")
 # note: this must happen before project()
 include(pico_sdk_import.cmake)
