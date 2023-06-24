@@ -37,8 +37,11 @@ int main()
     qDebugPrint = xQueueCreate(10, sizeof(int8_t)*DEBUGMSG_SIZE);
 
     //*** FreeRTOS tASKS ***/
-    xTaskCreate(vTask_AM2320,"TempAndHumd",256,NULL,1,NULL);
     xTaskCreate(TaskLEDBlinkvoid,"Ledblink",256,NULL,1,NULL);
+
+#if USE_AM2320 == 1
+    xTaskCreate(vTask_AM2320,"TempAndHumd",256,NULL,1,NULL);
+#endif
 #if ENABLE_DEBUG // Only if the debug flag is set.
     xTaskCreate(TaskDebugPrint, "DebugUSBPrint", 256, NULL, 1, NULL);
 #endif
