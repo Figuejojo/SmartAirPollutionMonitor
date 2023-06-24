@@ -24,11 +24,9 @@ void vTask_AM2320(void * pvParameters)
     gpio_set_function(AM2320_SDA, GPIO_FUNC_I2C);
     gpio_set_function(AM2320_SCL, GPIO_FUNC_I2C);
     #endif
-    int8_t msg[] = "I2CMSG";
 
     while(true)
     {
-        xQueueSendToBack(qDebugPrint,&msg,0);
         vTaskDelay(2000/portTICK_PERIOD_MS);
     }
 }

@@ -16,6 +16,7 @@
 
 #define AM2320_SDA (4)
 #define AM2320_SCL (5)
+#define AM2320_I2C_ADR ()
 
 /** @name 	vTask_AM2320
   *	@brief 	Task fro the AM2320 module (Temperature and Humidity sensor)
