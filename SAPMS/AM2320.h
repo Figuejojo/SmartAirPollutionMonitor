@@ -14,9 +14,9 @@
 #include "hardware/i2c.h"
 
 
-#define AM2320_SDA (4)
-#define AM2320_SCL (5)
-#define AM2320_I2C_ADR ()
+#define AM2320_SDA (4)  // Raspberry Pi Pico Pin for SDA
+#define AM2320_SCL (5)  // Raspberry Pi Pico Pin for SCL
+#define AM2320_I2C_ADR () //AM2320 I2C ADDRESS
 
 /** @name 	vTask_AM2320
   *	@brief 	Task fro the AM2320 module (Temperature and Humidity sensor)

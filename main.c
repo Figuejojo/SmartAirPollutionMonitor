@@ -13,12 +13,16 @@
 /*******************************************************************************
 * Static Global Variables
 *******************************************************************************/
-QueueHandle_t qDebugPrint;
 
 /*******************************************************************************
 * Function Declaration
 *******************************************************************************/
-void TaskDebugPrint(void * pvParameters);
+/** @name  TaskLEDBlinkvoid
+*   @brief Using the Pin3 with a LED as Heartbeat for knowing if the program is 
+*           still executing. Works as an example for other tasks.
+*
+*   @param 	Void * pvParameters
+*/
 void TaskLEDBlinkvoid(void * pvParameters);
 
 /*******************************************************************************
@@ -32,9 +36,9 @@ void TaskLEDBlinkvoid(void * pvParameters);
 int main()
 {
     //*** Hardware Initializations (If needed) ***/
-
-    //*** Queues Creation
-    qDebugPrint = xQueueCreate(10, sizeof(int8_t)*DEBUGMSG_SIZE);
+    
+    //*** Queues Creation    
+    debug_queue_setup();
 
     //*** FreeRTOS tASKS ***/
     xTaskCreate(TaskLEDBlinkvoid,"Ledblink",256,NULL,1,NULL);
@@ -53,20 +57,6 @@ int main()
 }
 
 /**
-	*	@name Debug_Print
-	*   @Type Task
-*/
-void TaskDebugPrint(void * pvParameters)
-{   
-    stdio_init_all();
-    int8_t msg[DEBUGMSG_SIZE];
-    while (true) {
-        xQueueReceive(qDebugPrint,msg,portMAX_DELAY);
-        printf("%s\r\n",msg);
-    }
-}
-
-/**
 	*	@name Debug_LEDBlink 
 	*   @Type Example Task
 */
@@ -75,13 +65,13 @@ void TaskLEDBlinkvoid(void * pvParameters)
     const uint8_t LED_PIN = 3;
     gpio_init(LED_PIN);
     gpio_set_dir(LED_PIN, GPIO_OUT);
-    int8_t msg[] = "DebugCycle";
+    int8_t msg[] = "DebugCycleYES";
     while(true)
     {
         vTaskDelay(500/portTICK_PERIOD_MS);
         gpio_put(LED_PIN,1);
         vTaskDelay(500/portTICK_PERIOD_MS);
         gpio_put(LED_PIN,0);
-        xQueueSendToBack(qDebugPrint,&msg,0);
+        Print_debug(msg);
     }
 }
