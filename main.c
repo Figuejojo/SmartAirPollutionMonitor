@@ -9,7 +9,7 @@
 *******************************************************************************/
 #include "common.h"
 #include "AM2320.h"
-
+#include "ADA746.h"
 /*******************************************************************************
 * Static Global Variables
 *******************************************************************************/
@@ -37,12 +37,15 @@ int main()
 {
     //*** Hardware Initializations (If needed) ***/
     
-    //*** Queues Creation    
+    //*** Queues Creation and setup  
     debug_queue_setup();
+    GPS_setup();
 
     //*** FreeRTOS tASKS ***/
     xTaskCreate(TaskLEDBlinkvoid,"Ledblink",256,NULL,1,NULL);
-
+#if USE_ADA746 == 1
+    xTaskCreate(vTaskGPS,"GPSTask",256,NULL,1,NULL);
+#endif
 #if USE_AM2320 == 1
     xTaskCreate(vTask_AM2320,"TempAndHumd",256,NULL,1,NULL);
 #endif
