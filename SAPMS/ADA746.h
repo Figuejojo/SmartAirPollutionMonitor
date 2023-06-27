@@ -16,8 +16,8 @@
 /*******************************************************************************
 * Type definitions
 *******************************************************************************/
-#define AM2320_SDA (0)  // Raspberry Pi Pico Pin for TXD
-#define AM2320_SCL (0)  // Raspberry Pi Pico Pin for RXD
+#define ADA746_TX (0)  // Raspberry Pi Pico Pin for TXD
+#define ADA746_RX (0)  // Raspberry Pi Pico Pin for RXD
 
 /*******************************************************************************
 * Function Prototypes

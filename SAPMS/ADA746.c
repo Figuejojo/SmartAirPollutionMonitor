@@ -19,6 +19,7 @@
 */
 void vTaskGPS(void * pvParameters)
 {
+    
     while(1)
     {
 
@@ -31,5 +32,7 @@ void vTaskGPS(void * pvParameters)
 */
 void GPS_setup(void)
 {
-
+#if USE_ADA746 == 1
+//Implementation here
+#endif
 }
