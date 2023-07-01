@@ -26,8 +26,8 @@
 /*******************************************************************************
 * Function Prototypes
 *******************************************************************************/
-/** @name 	PMS5003_setup();
-*   @brief Setup the UART1 configuration and pins at GP# and GP#
+/** @name  PMS5003_setup();
+*   @brief Setup the PM_USART configuration and pins at PM_USART_TXD and PM_USART_RXD
 *
 *   @param 	Void
 *   @return Void

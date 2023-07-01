@@ -12,9 +12,15 @@
 #include "PMS5003.h"
 
 /*******************************************************************************
-* Static Global Variables
+* Static Global Variables And Static Functons
 *******************************************************************************/
-
+/** @name  PMS5003_config();
+*   @brief Passive Mode Configuration to PMS5003.
+*
+*   @param 	Void
+*   @return Void
+*/
+static void PMS5003_config(void);
 /*******************************************************************************
 * Function Definition
 *******************************************************************************/
@@ -24,10 +30,29 @@
 */
 void vTaskPMS5003(void * pvParameters)
 {
+    uint8_t buff[] = "PMS5003 Task";
+    PMS5003_config();
     while(1)
     {
-        vTaskDelay(2000/portTICK_PERIOD_MS);
+        vTaskDelay(5000/portTICK_PERIOD_MS);
+        Print_debug(buff);
     }
+}
+
+/**
+*	@name PMS5003_config
+*   @type Task
+*/
+void PMS5003_config(void)
+{
+    const uint8_t MsgSize = 7;
+    const uint8_t PassiveMode[] = {0x42,0x4D,0xE1,0x00,0x00,0x01,0x70};
+    taskENTER_CRITICAL();
+    for(uint8_t MsgCont = 0; MsgCont < MsgSize; MsgCont++)
+    {
+        uart_putc(PM_USART,PassiveMode[MsgCont]);
+    }
+    taskEXIT_CRITICAL();
 }
 
 /**
