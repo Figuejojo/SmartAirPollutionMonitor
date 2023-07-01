@@ -12,15 +12,21 @@
 #include "PMS5003.h"
 
 /*******************************************************************************
-* Static Global Variables And Static Functons
+* Static Global Variables
 *******************************************************************************/
-/** @name  PMS5003_config();
+
+/*******************************************************************************
+* Static Function Declarations
+*******************************************************************************/
+
+/** @name  svConfigPMS5003();
 *   @brief Passive Mode Configuration to PMS5003.
 *
 *   @param 	Void
 *   @return Void
 */
-static void PMS5003_config(void);
+static void svConfigPMS5003(void);
+
 /*******************************************************************************
 * Function Definition
 *******************************************************************************/
@@ -30,12 +36,14 @@ static void PMS5003_config(void);
 */
 void vTaskPMS5003(void * pvParameters)
 {
-    uint8_t buff[] = "PMS5003 Task";
-    PMS5003_config();
+    uint8_t buff[28] = "";
+    svConfigPMS5003();
     while(1)
     {
         vTaskDelay(5000/portTICK_PERIOD_MS);
+
         Print_debug(buff);
+
     }
 }
 
@@ -43,7 +51,7 @@ void vTaskPMS5003(void * pvParameters)
 *	@name PMS5003_config
 *   @type Task
 */
-void PMS5003_config(void)
+void svConfigPMS5003(void)
 {
     const uint8_t MsgSize = 7;
     const uint8_t PassiveMode[] = {0x42,0x4D,0xE1,0x00,0x00,0x01,0x70};
@@ -56,10 +64,10 @@ void PMS5003_config(void)
 }
 
 /**
-*	@name PMS5003_setup
+*	@name vSetupPMS5003
 *   @type function
 */
-void PMS5003_setup(void)
+void vSetupPMS5003(void)
 {
 #if USE_PMS5003 == 1
     //TODO: Use Asserts!! 

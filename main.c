@@ -41,10 +41,11 @@ int main()
     //*** Queues Creation and setup  
     debug_queue_setup();
     GPS_setup();
-    PMS5003_setup();
+    vSetupPMS5003();
 
     //*** FreeRTOS tASKS ***/
     xTaskCreate(TaskLEDBlinkvoid,"Ledblink",256,NULL,1,NULL);
+        // The macros con be modified in the common.h file. 
 #if USE_ADA746 == 1
     xTaskCreate(vTaskGPS,"GPSTask",256,NULL,1,NULL);
 #endif

@@ -26,13 +26,13 @@
 /*******************************************************************************
 * Function Prototypes
 *******************************************************************************/
-/** @name  PMS5003_setup();
+/** @name  vSetupPMS5003();
 *   @brief Setup the PM_USART configuration and pins at PM_USART_TXD and PM_USART_RXD
 *
 *   @param 	Void
 *   @return Void
 */
-void PMS5003_setup(void);
+void vSetupPMS5003(void);
 
 /** @name   vTaskPMS5003
 *   @brief  PMS5003 taks dedicated to aquire the sensor data.
