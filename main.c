@@ -10,6 +10,7 @@
 #include "common.h"
 #include "AM2320.h"
 #include "ADA746.h"
+#include "PMS5003.h"
 /*******************************************************************************
 * Static Global Variables
 *******************************************************************************/
@@ -48,6 +49,9 @@ int main()
 #endif
 #if USE_AM2320 == 1
     xTaskCreate(vTask_AM2320,"TempAndHumd",256,NULL,1,NULL);
+#endif
+#if USE_PMS5003 == 1
+    xTaskCreate(vTaskPMS5003,"PM2and10um",256,NULL,1,NULL);
 #endif
 #if ENABLE_DEBUG // Only if the debug flag is set.
     xTaskCreate(TaskDebugPrint, "DebugUSBPrint", 256, NULL, 1, NULL);
