@@ -29,5 +29,6 @@
 #define USE_AM2320  (0)
 #define USE_ADA746  (0)
 #define USE_PMS5003 (0)
+#define USE_SEN0515 (0)
 
 #endif //_COMMON_H_

@@ -10,6 +10,7 @@
 #include "common.h"
 #include "AM2320.h"
 #include "ADA746.h"
+#include "SEN0515.h"
 /*******************************************************************************
 * Static Global Variables
 *******************************************************************************/
@@ -40,7 +41,8 @@ int main()
     //*** Queues Creation and setup  
     debug_queue_setup();
     GPS_setup();
-
+    setupSEN0515();
+    
     //*** FreeRTOS tASKS ***/
     xTaskCreate(TaskLEDBlinkvoid,"Ledblink",256,NULL,1,NULL);
 #if USE_ADA746 == 1
@@ -48,6 +50,9 @@ int main()
 #endif
 #if USE_AM2320 == 1
     xTaskCreate(vTask_AM2320,"TempAndHumd",256,NULL,1,NULL);
+#endif
+#if USE_SEN0515 == 1
+    xTaskCreate(vTaskSEN0515,"TVOC&CO2",256,NULL,1,NULL);
 #endif
 #if ENABLE_DEBUG // Only if the debug flag is set.
     xTaskCreate(TaskDebugPrint, "DebugUSBPrint", 256, NULL, 1, NULL);
