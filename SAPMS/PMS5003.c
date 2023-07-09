@@ -44,8 +44,9 @@ void vTaskPMS5003(void * pvParameters)
     uint8_t buff[28] = {0};
     while(1)
     {
-        vTaskDelay(5000/portTICK_PERIOD_MS);
+        vTaskDelay(2000/portTICK_PERIOD_MS);
         svConfigPMS5003();
+        vTaskDelay(3000/portTICK_PERIOD_MS); 
         svReadPM5003();
     }
 }
@@ -56,11 +57,26 @@ void vTaskPMS5003(void * pvParameters)
 */
 void svReadPM5003(void)
 {
+    uint8_t valuesPMS[32] = {0};
+    volatile uint16_t size = 0;
+
     const uint8_t MsgSize = 7;
     const uint8_t RequestData[] = {0x42,0x4D,0xE2,0x00,0x00,0x01,0x71};
     for(uint8_t MsgCont = 0; MsgCont < MsgSize; MsgCont++)
     {
         uart_putc(PM_USART, RequestData[MsgCont]);
+    }
+    //Start of Msg
+    uart_read_blocking(PM_USART,valuesPMS,32);
+    if(0x42 == valuesPMS[0] && 0x4D == valuesPMS[1])
+    {
+        //__breakpoint();
+        size = valuesPMS[2]<<16 | valuesPMS[3]; 
+        if(size == 28)
+        {
+
+            //__breakpoint();
+        }
     }
 }
 
