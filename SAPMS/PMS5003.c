@@ -42,11 +42,11 @@ static void svConfigPMS5003(void);
 void vTaskPMS5003(void * pvParameters)
 {
     uint8_t buff[28] = {0};
-    svConfigPMS5003();
     while(1)
     {
-        svReadPM5003();
         vTaskDelay(5000/portTICK_PERIOD_MS);
+        svConfigPMS5003();
+        svReadPM5003();
     }
 }
 
@@ -60,9 +60,7 @@ void svReadPM5003(void)
     const uint8_t RequestData[] = {0x42,0x4D,0xE2,0x00,0x00,0x01,0x71};
     for(uint8_t MsgCont = 0; MsgCont < MsgSize; MsgCont++)
     {
-        taskENTER_CRITICAL();
         uart_putc(PM_USART, RequestData[MsgCont]);
-        taskEXIT_CRITICAL();
     }
 }
 
@@ -74,12 +72,10 @@ void svConfigPMS5003(void)
 {
     const uint8_t MsgSize = 7;
     const uint8_t PassiveMode[] = {0x42,0x4D,0xE1,0x00,0x00,0x01,0x70};
-    taskENTER_CRITICAL();
     for(uint8_t MsgCont = 0; MsgCont < MsgSize; MsgCont++)
     {
         uart_putc(PM_USART,PassiveMode[MsgCont]);
     }
-    taskEXIT_CRITICAL();
 }
 
 /**
