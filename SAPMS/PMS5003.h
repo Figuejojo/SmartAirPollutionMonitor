@@ -23,6 +23,16 @@
 #define PM_USART_TXD (8)      // RP Pico TX pin
 #define PM_USART_RXD (9)      // RP Pico RX pin
 #define PM_BAUDRATE  (9600)   // Baudrate
+
+typedef struct msgPMS
+{
+    uint8_t ucSize;     //Size of Message
+    uint8_t ubRaw[28];  //Raw PMS5003 Uart Message
+    uint16_t uhwPM1;    //PM 1.0 ug/m3 Atm env.	
+    uint16_t uhwPM2_5;  //PM 2.5 ug/m3 Atm env.
+    uint16_t uhwPM10;   //PM 10. ug/m3 Atm env.
+}msgPMS_t;
+
 /*******************************************************************************
 * Function Prototypes
 *******************************************************************************/

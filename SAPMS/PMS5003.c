@@ -15,6 +15,7 @@
 * Static Global Variables
 *******************************************************************************/
 
+
 /*******************************************************************************
 * Static Function Declarations
 *******************************************************************************/
@@ -41,7 +42,9 @@ static void svConfigPMS5003(void);
 */
 void vTaskPMS5003(void * pvParameters)
 {
-    uint8_t buff[28] = {0};
+    msgPMS_t svPMS = {0};
+    //According to the datasheet the sensor will have stable data after 30 sec
+    vTaskDelay(28000/portTICK_PERIOD_MS);
     while(1)
     {
         vTaskDelay(2000/portTICK_PERIOD_MS);
@@ -62,20 +65,22 @@ void svReadPM5003(void)
 
     const uint8_t MsgSize = 7;
     const uint8_t RequestData[] = {0x42,0x4D,0xE2,0x00,0x00,0x01,0x71};
+    taskENTER_CRITICAL();
     for(uint8_t MsgCont = 0; MsgCont < MsgSize; MsgCont++)
     {
         uart_putc(PM_USART, RequestData[MsgCont]);
     }
     //Start of Msg
     uart_read_blocking(PM_USART,valuesPMS,32);
+    taskEXIT_CRITICAL();
     if(0x42 == valuesPMS[0] && 0x4D == valuesPMS[1])
     {
         //__breakpoint();
         size = valuesPMS[2]<<16 | valuesPMS[3]; 
         if(size == 28)
         {
-
-            //__breakpoint();
+            
+           // __breakpoint();   //Used to force break points when optimized. 
         }
     }
 }
