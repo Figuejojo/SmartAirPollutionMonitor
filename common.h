@@ -23,7 +23,7 @@
 #include "hardware/uart.h"
 
 // Debug includes
-#include "Debug_print.h"
+#include "./SAPMS/Debug_print.h"
 
 /*******************************************************************************
 * Type definitions
