@@ -28,8 +28,9 @@
 
 typedef struct valuesPMS
 {
-    uint8_t ucSize;     //Size of Message
     uint8_t ubRaw[PM_MSG_LEN];  //Raw PMS5003 Uart Message
+    uint8_t ucSize;     //Size of Message
+    uint16_t uhwCheckSum; //CheckSum;
     uint16_t uhwPM1;    //PM 1.0 ug/m3 Atm env.	
     uint16_t uhwPM2_5;  //PM 2.5 ug/m3 Atm env.
     uint16_t uhwPM10;   //PM 10. ug/m3 Atm env.
