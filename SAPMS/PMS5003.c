@@ -24,7 +24,7 @@
 *   @param Void
 *   @return Void
 */
-static void svReadPM5003(PMS_t * pPMS);
+static ERR_t svReadPM5003(PMS_t * pPMS);
 
 /** @name  svConfigPMS5003();
 *   @brief Passive Mode Configuration to PMS5003.
@@ -50,7 +50,14 @@ void vTaskPMS5003(void * pvParameters)
         vTaskDelay(2000/portTICK_PERIOD_MS);
         svConfigPMS5003();
         vTaskDelay(3000/portTICK_PERIOD_MS); 
-        svReadPM5003(&svPMS);
+        if(svReadPM5003(&svPMS))
+        {
+            //If the update of values was correct
+        }
+        else
+        {
+            //If the message had some issue
+        }
     }
 }
 
@@ -58,10 +65,11 @@ void vTaskPMS5003(void * pvParameters)
 *	@name svReadPM5003
 *   @type Task
 */
-static void svReadPM5003(PMS_t * pPMS)
+static ERR_t svReadPM5003(PMS_t * pPMS)
 {
     const uint8_t RequestData[] = {0x42,0x4D,0xE2,0x00,0x00,0x01,0x71,0xFE};
     const uint8_t * pReqData = RequestData;
+    ERR_t eError = ER_GEN;
 
     memset(pPMS,0,sizeof(PMS_t));   
 
@@ -99,9 +107,15 @@ static void svReadPM5003(PMS_t * pPMS)
                 pPMS->uhwPM1   = (pPMS->ubRaw[10]<<8) | (pPMS->ubRaw[11]);
                 pPMS->uhwPM2_5 = (pPMS->ubRaw[12]<<8) | (pPMS->ubRaw[13]);
                 pPMS->uhwPM10  = (pPMS->ubRaw[14]<<8) | (pPMS->ubRaw[15]);
+                eError = NO_ERROR;
+            }
+            else
+            {
+                eError = ER_CHECKSUM;
             }
         }
     }
+    return eError;
 }
 
 /**
