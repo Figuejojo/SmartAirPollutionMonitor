@@ -27,23 +27,34 @@
 #include "WIFI/process.h"
 
 /*******************************************************************************
+* Macro Definitions
+*******************************************************************************/
+#define ENABLE_DEBUG (1)    /*!< On/Off Debug prints */
+
+#define USE_WIRELESS (0)    /*!< On/Off Wireless Task */
+
+#define USE_AM2320   (0)    /*!< On/Off AM2320  Task */
+#define USE_ADA746   (0)    /*!< On/Off ADA746  Task */
+#define USE_PMS5003  (1)    /*!< On/Off PMS5003 Task */
+#define USE_SEN0515  (0)    /*!< On/Off ENS160  Task */
+
+/*******************************************************************************
 * Type definitions
 *******************************************************************************/
-#define ENABLE_DEBUG (1) // Enable the Debug prints
 
-#define USE_WIRELESS (0)
-
-#define USE_AM2320   (0)
-#define USE_ADA746   (0)
-#define USE_PMS5003  (0)
-#define USE_SEN0515  (0)
-
+/**
+ * @name ERR_t
+ * @type enum
+ * @brief Error typedef enumerator for function returns.
+ */
 typedef enum FUNC_ERRORS
 {
-    NO_ERROR        = 1,
-    ER_GEN          = 0,
-    ER_CHECKSUM     = -1,
-    ER_END          = ER_CHECKSUM-1,
+/*@{*/
+    ER_CHECKSUM     = -1,   /*!< Checksum Error */
+    ER_GEN          = 0,    /*!< Generic Error  */
+    NO_ERROR        = 1,    /*!< No Error       */
+    ER_END,
+/*@}*/
 }ERR_t;
 
 #endif //_COMMON_H_

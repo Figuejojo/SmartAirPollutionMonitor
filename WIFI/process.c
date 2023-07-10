@@ -12,6 +12,7 @@
 /*******************************************************************************
 * Static Global Variables
 *******************************************************************************/
+static QueueHandle_t sgqSensorData; /*!< SensorData FreeRTOS Queue */
 
 /*******************************************************************************
 * Static Function Declarations
@@ -34,6 +35,15 @@ void vTaskProcess(void * pvParameters)
 */
 void vSetupProcess(void)
 {
-    
+    sgqSensorData = xQueueCreate(PROC_QUEUE_SZ, sizeof(SAPMS_t));
 }
 
+/**
+*	@name vCollectData
+*   @type function
+*/
+void vCollectData(SAPMS_t * psSAPMS, SAPMS_e ESAPMS)
+{
+    psSAPMS->eSRC = ESAPMS;
+    xQueueSendToBack(sgqSensorData,psSAPMS,0);
+}
