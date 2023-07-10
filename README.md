@@ -6,8 +6,9 @@ Firmware for a Smart IoT Air Pollution Monitor dissertation project for the Univ
         - [1.2.1 SDK Setup](#SDKSetup)
         - [1.2.2 Project Setup](#PSetup)
 - [2 Project Development](#PDev)
-    - [2.1 Project Debug](#PDebug)
-    - [2.2 Load the program](#LoadProgram)
+    - [2.1 Project Macros](#PProject) 
+    - [2.2 Project Debug](#PDebug)
+    - [2.3 Load the program](#LoadProgram)
 - [3 References](#Ref)
 
 <a  name="ProjectSetup"></a>
@@ -78,14 +79,26 @@ C:\Path\YourProject\SmartAirPollutionMonitor\build> nmake
 ## 2 Project Development
 Now that everything is setup, this section has details on how to debug and load the program into the Raspberry pi pico-w.
 
+<a  name="PProject"></a>
+### 2.1 Project Macros
+As default the firmware will toogle an LED (```GP3```) each seccond to provide a visual feedback that the program is still running. Furthermore if the ```ENABLE_DEBUG``` macro is enable in ```common.h``` will also be printing a message thruough the USB virtual COM. 
+The ```common.h``` file provide a series of macro files for developers to modify the program characteritics by turning on (```1```) or off (```0```), the periferals or debug elements from the program. For instance the code below provide a configuration where the print debug is eanble and the sensors are off.
+```C
+#define ENABLE_DEBUG (1)
+#define USE_AM2320  (0)
+#define USE_ADA746  (0)
+#define USE_PMS5003 (0)
+#define USE_SEN0515 (0)
+```
+
 <a  name="PDebug"></a>
-### 2.1 Project Debug
+### 2.2 Project Debug
 To enable the print as a DEBUG method, check the ```SAPMS\common.h``` file and set ```ENABLE_DEBUG``` to ```1```.
 The preferred Serial COM tool is [Putty](https://www.putty.org/) and the Baudrate is set at ```115200```.
 This [link](https://the.earth.li/~sgtatham/putty/latest/w64/putty-64bit-0.78-installer.msi) is for the direct download of Putty's version 0.78 for Windows 64-bit x86
 
 <a  name="LoadProgram"></a>
-### 2.2 Load the program
+### 2.3 Load the program
 First, put the Raspberry Pi Pico into mass storage mode by clicking the *BOOT* button and then connecting it to the computer. Then check the build folder for a SAPM.uf2 file and drag it into the RPI-RP2 device folder.
 
 <a  name="Ref"></a>
