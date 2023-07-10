@@ -93,7 +93,7 @@ The ```common.h``` file provide a series of macro files for developers to modify
 
 <a  name="PDebug"></a>
 ### 2.2 Project Debug
-To enable the print as a DEBUG method, check the ```SAPMS\common.h``` file and set ```ENABLE_DEBUG``` to ```1```.
+To enable the print as a DEBUG method, check the ```common.h``` file and set ```ENABLE_DEBUG``` to ```1```.
 The preferred Serial COM tool is [Putty](https://www.putty.org/) and the Baudrate is set at ```115200```.
 This [link](https://the.earth.li/~sgtatham/putty/latest/w64/putty-64bit-0.78-installer.msi) is for the direct download of Putty's version 0.78 for Windows 64-bit x86
 

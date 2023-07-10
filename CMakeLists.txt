@@ -20,6 +20,9 @@ add_executable(SAPM
     main.c
 )
 
+# Add all header files in the currect location
+target_include_directories(SAPMS PUBLIC .)
+
 # Add pico_stdlib library which aggregates commonly used features
 target_link_libraries(SAPM pico_stdlib freertos SAPMS)
 
