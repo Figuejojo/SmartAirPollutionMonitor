@@ -17,7 +17,6 @@
 /*******************************************************************************
 * Type definitions
 *******************************************************************************/
-#define PM_USART_INT (0)
 #define PM_MSG_LEN   (32)   //PMS total message including start and size bytes.
 #define PM_DATA_SIZE (28)   //PMS data size   
 
@@ -25,6 +24,8 @@
 #define PM_USART_TXD (8)      // RP Pico TX pin
 #define PM_USART_RXD (9)      // RP Pico RX pin
 #define PM_BAUDRATE  (9600)   // Baudrate
+
+#define PM_USART_INT (0)      // Not in use / Not Avilable
 
 typedef struct valuesPMS
 {

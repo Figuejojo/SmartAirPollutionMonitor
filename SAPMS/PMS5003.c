@@ -147,7 +147,7 @@ void vSetupPMS5003(void)
     gpio_set_function(PM_USART_TXD, GPIO_FUNC_UART);
     gpio_set_function(PM_USART_RXD, GPIO_FUNC_UART);
 
-#if PM_USART_INT == 1   // Initialize INT UART RX
+#if 0   //PM_USART_INT == 1   // Initialize INT UART RX
     // And set up and enable the interrupt handlers
     int UART_IRQ = PM_USART == uart0 ? UART0_IRQ : UART1_IRQ;
     irq_set_exclusive_handler(UART_IRQ, on_uart_rx);
