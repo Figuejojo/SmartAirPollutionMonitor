@@ -34,4 +34,12 @@
 #define USE_ADA746  (0)
 #define USE_PMS5003 (0)
 
+typedef enum FUNC_ERRORS
+{
+    NO_ERROR        = 1,
+    ER_GEN          = 0,
+    ER_CHECKSUM     = -1,
+    ER_END          = ER_CHECKSUM-1,
+}ERR_t;
+
 #endif //_COMMON_H_
