@@ -16,6 +16,7 @@
 #include <task.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <string.h>
 #include "pico/stdlib.h"
 
 // Pico Peripherals

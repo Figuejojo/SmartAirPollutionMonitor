@@ -24,7 +24,7 @@
 *   @param Void
 *   @return Void
 */
-static void svReadPM5003(void);
+static void svReadPM5003(PMS_t * pPMS);
 
 /** @name  svConfigPMS5003();
 *   @brief Passive Mode Configuration to PMS5003.
@@ -42,7 +42,7 @@ static void svConfigPMS5003(void);
 */
 void vTaskPMS5003(void * pvParameters)
 {
-    msgPMS_t svPMS = {0};
+    PMS_t svPMS = {0};
     //According to the datasheet the sensor will have stable data after 30 sec
     vTaskDelay(28000/portTICK_PERIOD_MS);
     while(1)
@@ -50,7 +50,7 @@ void vTaskPMS5003(void * pvParameters)
         vTaskDelay(2000/portTICK_PERIOD_MS);
         svConfigPMS5003();
         vTaskDelay(3000/portTICK_PERIOD_MS); 
-        svReadPM5003();
+        svReadPM5003(&svPMS);
     }
 }
 
@@ -58,29 +58,32 @@ void vTaskPMS5003(void * pvParameters)
 *	@name svReadPM5003
 *   @type Task
 */
-void svReadPM5003(void)
+static void svReadPM5003(PMS_t * pPMS)
 {
-    uint8_t valuesPMS[32] = {0};
-    volatile uint16_t size = 0;
+    memset(pPMS,0,sizeof(PMS_t));   
 
     const uint8_t MsgSize = 7;
     const uint8_t RequestData[] = {0x42,0x4D,0xE2,0x00,0x00,0x01,0x71};
+    
+    //* Critical task so message send and request are not interrupted *//
     taskENTER_CRITICAL();
+    //Request Passive Mode
     for(uint8_t MsgCont = 0; MsgCont < MsgSize; MsgCont++)
     {
         uart_putc(PM_USART, RequestData[MsgCont]);
     }
-    //Start of Msg
-    uart_read_blocking(PM_USART,valuesPMS,32);
+
+    //Read Mesage after request in Passive Mode.
+    uart_read_blocking(PM_USART,pPMS->ubRaw,PM_MSG_LEN);
     taskEXIT_CRITICAL();
-    if(0x42 == valuesPMS[0] && 0x4D == valuesPMS[1])
+
+    //Parse of the message, checksum verification and data aquired. 
+    if(0x42 == pPMS->ubRaw[0] && 0x4D == pPMS->ubRaw[1])
     {
-        //__breakpoint();
-        size = valuesPMS[2]<<16 | valuesPMS[3]; 
-        if(size == 28)
+        pPMS->ucSize = pPMS->ubRaw[2]<<16 | pPMS->ubRaw[3]; 
+        if(pPMS->ucSize == PM_DATA_SIZE)
         {
-            
-           // __breakpoint();   //Used to force break points when optimized. 
+           //__breakpoint();   //Used to force break points when optimized. 
         }
     }
 }
