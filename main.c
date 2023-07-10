@@ -4,10 +4,13 @@
  *  @author Y3913624
  */
 
+/** @todo: assigned task priorities. */ 
+
 /*******************************************************************************
 * Includes
 *******************************************************************************/
 #include "common.h"
+#include "wifi_mqtt.h"
 #include "AM2320.h"
 #include "ADA746.h"
 #include "PMS5003.h"
@@ -46,11 +49,17 @@ int main()
     vSetupPMS5003();
     setupSEN0515();
     vSetupWifi();
+    vSetupProcess();
+    
+    /*****************
+    * FreeRTOS tASKS *
+    ******************/
 
-    //*** FreeRTOS tASKS ***/
+   //These tasks are always created.
     xTaskCreate(TaskLEDBlinkvoid,"Ledblink",256,NULL,1,NULL);
-        // The macros con be modified in the common.h file.
-        /* @todo: assigned task priorities. */ 
+    xTaskCreate(vTaskProcess,"DataProcess",256,NULL,1,NULL);
+
+    // These tasks can be turn on/off by using the macros on common.h file.
 #if USE_WIRELESS == 1
     xTaskCreate(vTaskWireless,"Wireless",256,NULL,1,NULL);
 #endif

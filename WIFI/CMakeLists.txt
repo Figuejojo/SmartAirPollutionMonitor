@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.12)
 
 set(WIFI_SRCS
     wifi_mqtt.c
+    process.c
 )
 
 add_library(WIFI ${WIFI_SRCS})

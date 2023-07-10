@@ -24,7 +24,7 @@
 
 // Debug includes
 #include "SAPMS/Debug_print.h"
-#include "WIFI/wifi_mqtt.h"
+#include "WIFI/process.h"
 
 /*******************************************************************************
 * Type definitions
