@@ -4,6 +4,7 @@ set(SAPMS_SRCS
     ADA746.c
     AM2320.c
     PMS5003.c
+    SEN0515.c
     Debug_print.c
 )
 

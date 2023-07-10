@@ -11,6 +11,8 @@
 #include "AM2320.h"
 #include "ADA746.h"
 #include "PMS5003.h"
+#include "SEN0515.h"
+
 /*******************************************************************************
 * Static Global Variables
 *******************************************************************************/
@@ -42,7 +44,8 @@ int main()
     debug_queue_setup();
     GPS_setup();
     vSetupPMS5003();
-
+    setupSEN0515();
+    
     //*** FreeRTOS tASKS ***/
     xTaskCreate(TaskLEDBlinkvoid,"Ledblink",256,NULL,1,NULL);
         // The macros con be modified in the common.h file. 
@@ -54,6 +57,9 @@ int main()
 #endif
 #if USE_PMS5003 == 1
     xTaskCreate(vTaskPMS5003,"PM2and10um",256,NULL,1,NULL);
+#endif
+#if USE_SEN0515 == 1
+    xTaskCreate(vTaskSEN0515,"TVOC&CO2",256,NULL,1,NULL);
 #endif
 #if ENABLE_DEBUG // Only if the debug flag is set.
     xTaskCreate(TaskDebugPrint, "DebugUSBPrint", 256, NULL, 1, NULL);
