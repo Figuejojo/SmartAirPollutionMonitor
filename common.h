@@ -23,17 +23,20 @@
 #include "hardware/uart.h"
 
 // Debug includes
-#include "Debug_print.h"
+#include "SAPMS/Debug_print.h"
+#include "WIFI/wifi_mqtt.h"
 
 /*******************************************************************************
 * Type definitions
 *******************************************************************************/
 #define ENABLE_DEBUG (1) // Enable the Debug prints
 
-#define USE_AM2320  (0)
-#define USE_ADA746  (0)
-#define USE_PMS5003 (0)
-#define USE_SEN0515 (0)
+#define USE_WIRELESS (0)
+
+#define USE_AM2320   (0)
+#define USE_ADA746   (0)
+#define USE_PMS5003  (0)
+#define USE_SEN0515  (0)
 
 typedef enum FUNC_ERRORS
 {

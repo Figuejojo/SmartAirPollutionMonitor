@@ -14,6 +14,7 @@ pico_sdk_init()
 # Subdirectories
 add_subdirectory(freertos)
 add_subdirectory(SAPMS)
+add_subdirectory(WIFI)
 
 # rest of your project
 add_executable(SAPM
@@ -22,9 +23,10 @@ add_executable(SAPM
 
 # Add all header files in the currect location
 target_include_directories(SAPMS PUBLIC .)
+target_include_directories(WIFI PUBLIC .)
 
 # Add pico_stdlib library which aggregates commonly used features
-target_link_libraries(SAPM pico_stdlib freertos SAPMS)
+target_link_libraries(SAPM pico_stdlib freertos SAPMS WIFI)
 
 # Enable usb output, disable uart output
 pico_enable_stdio_usb(${PROJECT_NAME} 1)

@@ -45,10 +45,15 @@ int main()
     GPS_setup();
     vSetupPMS5003();
     setupSEN0515();
-    
+    vSetupWifi();
+
     //*** FreeRTOS tASKS ***/
     xTaskCreate(TaskLEDBlinkvoid,"Ledblink",256,NULL,1,NULL);
-        // The macros con be modified in the common.h file. 
+        // The macros con be modified in the common.h file.
+        /* @todo: assigned task priorities. */ 
+#if USE_WIRELESS == 1
+    xTaskCreate(vTaskWireless,"Wireless",256,NULL,1,NULL);
+#endif
 #if USE_ADA746 == 1
     xTaskCreate(vTaskGPS,"GPSTask",256,NULL,1,NULL);
 #endif

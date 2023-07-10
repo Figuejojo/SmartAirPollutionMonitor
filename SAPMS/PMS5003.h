@@ -1,4 +1,4 @@
-/** @file Debug PMS5003.h
+/** @file PMS5003.h
  *  @brief The file contains the declaration for the PMS5003 sensor including  
  *          UART setup, PMS5003 RTOS Task and PMS specific functions for 
  *          configuratioin and getting data.   

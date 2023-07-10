@@ -1,0 +1,15 @@
+cmake_minimum_required(VERSION 3.12)
+
+set(WIFI_SRCS
+    wifi_mqtt.c
+)
+
+add_library(WIFI ${WIFI_SRCS})
+
+target_include_directories(WIFI PUBLIC .)
+
+target_link_libraries(WIFI PUBLIC
+    pico_stdlib 
+    freertos  
+)
+
