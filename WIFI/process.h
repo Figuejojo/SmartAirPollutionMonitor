@@ -1,7 +1,7 @@
 /** @file process.h
  *  @brief Header file for processing sensor information. 
  *
- *  @authors Y3913624 
+ *  @authors Jose Jorge Figueroa Figueroa 
  */
 
 #ifndef _PROCESS_H_

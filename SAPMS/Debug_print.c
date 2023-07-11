@@ -2,7 +2,7 @@
  *  @brief  The file contains the print function definitions for debugging thruogh 
  *           the USB in Raspberry pi pico, without bloquing the program. 
  *
- *  @author Y3913624
+ *  @author Jose Jorge Figueroa Figueroa
  */
 
 /*******************************************************************************
@@ -13,7 +13,7 @@
 /*******************************************************************************
 * Static Global Variables
 *******************************************************************************/
-QueueHandle_t qDebugPrint;
+QueueHandle_t qDebugPrint;  /*!< Debug print FreeRTOS Queue */
 
 /*******************************************************************************
 * Function Definition

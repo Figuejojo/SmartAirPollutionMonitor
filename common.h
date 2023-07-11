@@ -2,7 +2,7 @@
  *  @brief Header file intended to be call in all documents. It will contian elements that will be used across
  *          most of the files.
  *
- *  @authors Y3913624 
+ *  @authors Jose Jorge Figueroa Figueroa 
  */
 
 #ifndef _COMMON_H_
