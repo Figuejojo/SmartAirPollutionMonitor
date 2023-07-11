@@ -35,7 +35,7 @@
 
 #define USE_AM2320   (0)    /*!< On/Off AM2320  Task */
 #define USE_ADA746   (0)    /*!< On/Off ADA746  Task */
-#define USE_PMS5003  (1)    /*!< On/Off PMS5003 Task */
+#define USE_PMS5003  (0)    /*!< On/Off PMS5003 Task */
 #define USE_SEN0515  (0)    /*!< On/Off ENS160  Task */
 
 /*******************************************************************************
