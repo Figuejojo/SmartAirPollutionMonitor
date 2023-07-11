@@ -23,7 +23,6 @@
 #include "hardware/uart.h"
 
 // Debug includes
-<<<<<<< HEAD
 #include "SAPMS/Debug_print.h"
 #include "WIFI/process.h"
 
@@ -38,9 +37,6 @@
 #define USE_ADA746   (0)    /*!< On/Off ADA746  Task */
 #define USE_PMS5003  (1)    /*!< On/Off PMS5003 Task */
 #define USE_SEN0515  (0)    /*!< On/Off ENS160  Task */
-=======
-#include "./SAPMS/Debug_print.h"
->>>>>>> Develop
 
 /*******************************************************************************
 * Type definitions
