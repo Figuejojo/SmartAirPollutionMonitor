@@ -8,7 +8,7 @@
 * Includes
 *******************************************************************************/
 #include "wifi_mqtt.h"
-
+#include "pico/cyw43_arch.h"
 /*******************************************************************************
 * Static Global Variables
 *******************************************************************************/
@@ -24,7 +24,10 @@ void vTaskWireless(void * pvParameters)
 {
     while(1)
     {
-        vTaskDelay(1000/portTICK_PERIOD_MS);
+        cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
+        vTaskDelay(250/portTICK_PERIOD_MS);
+        cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 0);
+        vTaskDelay(250/portTICK_PERIOD_MS);
     }
 }
 
@@ -35,7 +38,9 @@ void vTaskWireless(void * pvParameters)
 void vSetupWifi(void)
 {
 #if (USE_WIRELESS == 1)
-    
+    if (cyw43_arch_init()) {
+        printf("Wi-Fi init failed");
+    }
 #endif
 }
 

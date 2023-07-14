@@ -37,7 +37,7 @@ void vTaskProcess(void * pvParameters)
                 cacheData.sPM.fPM10 = (cacheData.sPM.fPM10 + xQdata.sPM.fPM10)/2;
                 sprintf(msg,"PM1 %0.1f ,PM2.5 %0.1f , PM5 %0.1f\n",cacheData.sPM.fPM1,cacheData.sPM.fPM25,cacheData.sPM.fPM10);
                 break;
-            
+
             default:
                 sprintf(msg,"No New Data\n");
                 break;
