@@ -25,7 +25,7 @@
 *   @param 	Void
 *   @return Void
 */
-void vSetupWifi(void);
+ERR_t vSetupWifi(void);
 
 /** @name   vTaskWireless
 *   @brief  Wireless taks dedicated to aquire the sensor data and send it through wifi.

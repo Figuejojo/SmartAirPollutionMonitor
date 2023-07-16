@@ -35,12 +35,14 @@ void vTaskWireless(void * pvParameters)
 *	@name vSetupWifi
 *   @type function
 */
-void vSetupWifi(void)
+ERR_t vSetupWifi(void)
 {
 #if (USE_WIRELESS == 1)
     if (cyw43_arch_init()) {
         printf("Wi-Fi init failed");
+        return ER_WIFI;
     }
 #endif
+    return NO_ERROR;
 }
 

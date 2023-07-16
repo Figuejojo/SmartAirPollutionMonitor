@@ -50,6 +50,7 @@
 typedef enum FUNC_ERRORS
 {
 /*@{*/
+    ER_WIFI         =- 2,   /*!< Wifi Error*/
     ER_CHECKSUM     = -1,   /*!< Checksum Error */
     ER_GEN          = 0,    /*!< Generic Error  */
     NO_ERROR        = 1,    /*!< No Error       */

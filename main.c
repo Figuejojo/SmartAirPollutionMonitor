@@ -48,8 +48,9 @@ int main()
     GPS_setup();
     vSetupPMS5003();
     setupSEN0515();
-    vSetupWifi();
     vSetupProcess();
+    ERR_t errWifi = vSetupWifi();
+
     
     /*****************
     * FreeRTOS tASKS *
@@ -61,7 +62,10 @@ int main()
 
     // These tasks can be turn on/off by using the macros on common.h file.
 #if USE_WIRELESS == 1
-    xTaskCreate(vTaskWireless,"Wireless",256,NULL,1,NULL);
+    if(NO_ERROR == errWifi)
+    {
+        xTaskCreate(vTaskWireless,"Wireless",256,NULL,1,NULL);
+    }
 #endif
 #if USE_ADA746 == 1
     xTaskCreate(vTaskGPS,"GPSTask",256,NULL,1,NULL);
