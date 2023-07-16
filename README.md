@@ -84,11 +84,12 @@ Now that everything is setup, this section has details on how to debug and load 
 As default the firmware will toogle an LED (```GP3```) each seccond to provide a visual feedback that the program is still running. Furthermore if the ```ENABLE_DEBUG``` macro is enable in ```common.h``` will also be printing a message thruough the USB virtual COM. 
 The ```common.h``` file provide a series of macro files for developers to modify the program characteritics by turning on (```1```) or off (```0```), the periferals or debug elements from the program. For instance the code below provide a configuration where the print debug is eanble and the sensors are off.
 ```C
-#define ENABLE_DEBUG (1)
-#define USE_AM2320  (0)
-#define USE_ADA746  (0)
-#define USE_PMS5003 (0)
-#define USE_SEN0515 (0)
+#define ENABLE_DEBUG (1)// 1-Enable/0-Disable DEBUG print.
+#define USE_WIRELESS(0) // 1-Enable/0-Disable Wifi thread
+#define USE_AM2320  (0) // 1-Enable/0-Disable Temp & Humid Sensor
+#define USE_ADA746  (0) // 1-Enable/0-Disable GPS
+#define USE_PMS5003 (0) // 1-Enable/0-Disable PM sensor
+#define USE_SEN0515 (0) // 1-Enable/0-Disable TVOC & CO2 Sensor
 ```
 
 <a  name="PDebug"></a>
