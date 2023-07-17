@@ -9,60 +9,55 @@
 *******************************************************************************/
 #include "wifi_mqtt.h"
 #include "pico/cyw43_arch.h"
+
+#include "lwip/pbuf.h"
+#include "lwip/udp.h"
 /*******************************************************************************
 * Static Global Variables
 *******************************************************************************/
+#define UDP_PORT 4444
+#define BEACON_MSG_LEN_MAX 127
+#define BEACON_TARGET "255.255.255.255"
+#define BEACON_INTERVAL_MS 1000
 
 /*******************************************************************************
 * Static Function Declarations
 *******************************************************************************/
-static int scan_result(void *env, const cyw43_ev_scan_result_t *result) {
-    if (result) {
-        taskENTER_CRITICAL();
-
-        printf("ssid: %-32s rssi: %4d chan: %3d mac: %02x:%02x:%02x:%02x:%02x:%02x sec: %u\n",
-            result->ssid, result->rssi, result->channel,
-            result->bssid[0], result->bssid[1], result->bssid[2], result->bssid[3], result->bssid[4], result->bssid[5],
-            result->auth_mode);
-
-        taskEXIT_CRITICAL();    
-    }
-    return 0;
-}
-
 /**
 *	@name vTaskWireless
 *   @type Task
 */
 void vTaskWireless(void * pvParameters)
 {
-    bool scan_in_progress = false;
-    int err = 0;
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 0);
+
+    struct udp_pcb * pcb = udp_new();
+    ip_addr_t addr;
+    ipaddr_aton(BEACON_TARGET, &addr);
+    char msg[20];
+    bool isConnected = false;
     cyw43_arch_enable_sta_mode();
+    Print_debug("WirelessTask\n");
+
     while(1)
     {
-        if(!scan_in_progress)
+		Print_debug("Connecting to Wi-Fi...\n");
+        if(isConnected == true)
         {
-            cyw43_wifi_scan_options_t scan_options = {0};
-            int err = cyw43_wifi_scan(&cyw43_state, &scan_options, NULL, scan_result);
-            if(0 == err)
-            {
-                Print_debug("Scanning Wifi...");
-            }
-            else
-            {
-                Print_debug("Failed to start scan");
-                vTaskDelay(10000/portTICK_PERIOD_MS);
-                cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
+            cyw43_arch_poll();
+            Print_debug("Connected.\n");
+        }
+        else
+        {
+            if (cyw43_arch_wifi_connect_timeout_ms(SSID_WIFI, PSWD_WIFI, CYW43_AUTH_WPA2_AES_PSK, 2000)) {
+                Print_debug("failed to connect.\n");
+                isConnected == false;
+            } else {
+                Print_debug("Connected.\n");
+                isConnected = true;
             }
         }
-        else if (!cyw43_wifi_scan_active(&cyw43_state))
-        {
-            vTaskDelay(10000/portTICK_PERIOD_MS);
-            scan_in_progress = false;
-        }
-        vTaskDelay(1000/portTICK_PERIOD_MS);
+        vTaskDelay(500/portTICK_PERIOD_MS);
     }
 }
 
