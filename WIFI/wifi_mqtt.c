@@ -37,27 +37,27 @@ void vTaskWireless(void * pvParameters)
     char msg[20];
     bool isConnected = false;
     cyw43_arch_enable_sta_mode();
-    Print_debug("WirelessTask\n");
+    Print_debug("WirelessTask");
+	Print_debug("Connecting to Wi-Fi...");
 
     while(1)
     {
-		Print_debug("Connecting to Wi-Fi...\n");
         if(isConnected == true)
         {
             cyw43_arch_poll();
-            Print_debug("Connected.\n");
+            Print_debug("Polling.\n");
         }
         else
         {
-            if (cyw43_arch_wifi_connect_timeout_ms(SSID_WIFI, PSWD_WIFI, CYW43_AUTH_WPA2_AES_PSK, 2000)) {
-                Print_debug("failed to connect.\n");
+            if (cyw43_arch_wifi_connect_timeout_ms(SSID_WIFI, PSWD_WIFI, CYW43_AUTH_WPA2_AES_PSK, 5000)) {
+                Print_debug("failed to connect.");
                 isConnected == false;
             } else {
-                Print_debug("Connected.\n");
+                Print_debug("Connected.");
                 isConnected = true;
             }
         }
-        vTaskDelay(500/portTICK_PERIOD_MS);
+        vTaskDelay(300/portTICK_PERIOD_MS);
     }
 }
 
