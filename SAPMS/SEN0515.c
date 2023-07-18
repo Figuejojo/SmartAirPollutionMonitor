@@ -12,6 +12,7 @@
 /*******************************************************************************
 * Static Global Variables
 *******************************************************************************/
+#define ENS_CMD_ID (0x00)
 
 /*******************************************************************************
 * Static Function Declarations
@@ -27,25 +28,24 @@
 */
 void vTaskSEN0515(void * pvParameters)
 {
-    uint8_t msg[] = "TVOC";
+    uint8_t msg[25] = {0};
+    uint8_t cBuff[4] = {0};
     while(1)
     {
-        vTaskDelay(1000/portTICK_PERIOD_MS);
-#if 0 
-        // Example: Read data from SEN0515/ENS160
-        uint8_t reg_address = 0x00; // Change this to the desired register address
-
-        // Start the I2C transaction
-        i2c_write_blocking(I2C_PORT, device_address, &reg_address, 1, true);
-
-        // Read data from SEN0515/ENS160
-        uint8_t data[2];
-        i2c_read_blocking(I2C_PORT, device_address, data, sizeof(data), false);
-
-        // Process the data (e.g., print it)
-        printf("Data: 0x%02X%02X\n", data[0], data[1]);
-#endif
+        uint8_t cmd = ENS_CMD_ID;
+        int state = i2c_write_blocking(ENS_I2C, ENS_I2C_ADDR, &cmd, 1, true);
+        if(PICO_OK <= state)
+        {
+            i2c_read_blocking(ENS_I2C, ENS_I2C_ADDR, cBuff, 2, false);
+            sprintf(msg,"TVOC - %x",cBuff[0]|cBuff[1]<<8);
+        }
+        else
+        {
+            sprintf(msg,"TVOC - ERROR %d",state);
+        }
+        //sprintf(msg,"%x %x",cBuff[0],cBuff[1]);
         Print_debug(msg);
+        vTaskDelay(1000/portTICK_PERIOD_MS);
     }
 }
 

@@ -20,7 +20,9 @@
 #define ENS_I2C1_SDA  (18)  // Raspberry Pi Pico Pin for TXD
 #define ENS_I2C1_SCL  (19)  // Raspberry Pi Pico Pin for RXD
 
-#define ENS_I2C1_FREQ (400*1000)  // I2C bus frequency in Hz 4K for speed mode.
+#define ENS_I2C_ADDR  (0x53)
+
+#define ENS_I2C1_FREQ (100000)  // I2C bus frequency in Hz 48K for speed mode.
 
 /*******************************************************************************
 * Function Prototypes
