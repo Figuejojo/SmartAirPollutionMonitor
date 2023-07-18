@@ -1,7 +1,11 @@
 /** @file sen0515.c
- *  @brief  // Setting up the I2C1 peripheral in the Raspberry Pi Pico to be used for the SEN0515/ENS160
- *
- *  @author //Exam Id
+ *  @brief TVOC and CO2 sensor
+ *         - SEN0515/ENS160 file for collecting TVOC and CO2 data.
+ *         - This file contains the task, and static functions definition.
+ *         - The behaviour of the sensor is handle throughout a state machine.
+ *         - The data collection is thru the I2C protocol.
+ * 
+ *  @author Jose Jorge Figueroa Figueroa
  */
 /*******************************************************************************
 * Includes

@@ -1,8 +1,12 @@
 /** @file SEN0515.h
  *  @brief TVOC and CO2 sensor
- *          Containts the definitions for SEN0515/ENS160
+ *         - SEN0515/ENS160 file for collecting TVOC and CO2 data.
+ *         - This file contains the task, and static functions declarations,
+ *              macro definitions and the machine states
+ *         - The behaviour of the sensor is handle throughout a state machine.
+ *         - The data collection is thru the I2C protocol.
  *
- *  @author "Exam Number"
+ *  @author Jose Jorge Figueroa Figueroa
  */
 
 #ifndef _SEN0515_H_
