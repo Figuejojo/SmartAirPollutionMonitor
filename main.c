@@ -64,20 +64,20 @@ int main()
 #if USE_WIRELESS == 1
     if(NO_ERROR == errWifi)
     {
-        xTaskCreate(vTaskWireless,"Wireless",256,NULL,1,NULL);
+        xTaskCreate(vTaskWireless,"Wireless",256,NULL,4,NULL);
     }
 #endif
 #if USE_ADA746 == 1
-    xTaskCreate(vTaskGPS,"GPSTask",256,NULL,1,NULL);
+    xTaskCreate(vTaskGPS,"GPSTask",256,NULL,2,NULL);
 #endif
 #if USE_AM2320 == 1
-    xTaskCreate(vTask_AM2320,"TempAndHumd",256,NULL,1,NULL);
+    xTaskCreate(vTask_AM2320,"TempAndHumd",256,NULL,2,NULL);
 #endif
 #if USE_PMS5003 == 1
-    xTaskCreate(vTaskPMS5003,"PM2and10um",256,NULL,1,NULL);
+    xTaskCreate(vTaskPMS5003,"PM2and10um",256,NULL,2,NULL);
 #endif
 #if USE_SEN0515 == 1
-    xTaskCreate(vTaskSEN0515,"TVOC&CO2",256,NULL,1,NULL);
+    xTaskCreate(vTaskSEN0515,"TVOC&CO2",256,NULL,2,NULL);
 #endif
 #if ENABLE_DEBUG // Only if the debug flag is set.
     xTaskCreate(TaskDebugPrint, "DebugUSBPrint", 256, NULL, 1, NULL);

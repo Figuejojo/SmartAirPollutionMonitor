@@ -36,22 +36,26 @@ void vTaskWireless(void * pvParameters)
     ipaddr_aton(BEACON_TARGET, &addr);
     char msg[20];
     bool isConnected = false;
+    int status = cyw43_wifi_link_status(&cyw43_state,CYW43_ITF_STA);
     cyw43_arch_enable_sta_mode();
     Print_debug("WirelessTask");
 	Print_debug("Connecting to Wi-Fi...");
 
     while(1)
     {
+        status = cyw43_wifi_link_status(&cyw43_state,CYW43_ITF_STA);
         if(isConnected == true)
         {
             cyw43_arch_poll();
-            Print_debug("Polling.\n");
+            sprintf(msg,"Polling %d",status);
+            Print_debug(msg);
+            isConnected = (status<0)?false:isConnected;
         }
         else
         {
             if (cyw43_arch_wifi_connect_timeout_ms(SSID_WIFI, PSWD_WIFI, CYW43_AUTH_WPA2_AES_PSK, 5000)) {
-                Print_debug("failed to connect.");
-                isConnected == false;
+                sprintf(msg,"Fail to Connect %d",status);
+                Print_debug(msg);
             } else {
                 Print_debug("Connected.");
                 isConnected = true;
