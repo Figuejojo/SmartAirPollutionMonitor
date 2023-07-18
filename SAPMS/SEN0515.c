@@ -122,7 +122,7 @@ void vTaskSEN0515(void * pvParameters)
 *	@name  setupSEN0515
 *   @Type  function
 */
-void setupSEN0515(void)
+void vSetupSEN0515(void)
 {
 #if USE_SEN0515 == 1
     i2c_init(ENS_I2C, ENS_I2C1_FREQ);

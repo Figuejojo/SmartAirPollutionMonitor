@@ -59,7 +59,7 @@ typedef enum ENS_States
 *   @param 	Void
 *   @return Void
 */
-void setupSEN0515(void);
+void vSetupSEN0515(void);
 
 /** @name 	vTaskSEN0515
 *   @brief  Collect data from the SEN0515/ENS160 sensor

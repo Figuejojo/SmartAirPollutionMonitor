@@ -47,7 +47,7 @@ int main()
     debug_queue_setup();
     GPS_setup();
     vSetupPMS5003();
-    setupSEN0515();
+    vSetupSEN0515();
     vSetupWifi();
     vSetupProcess();
     
