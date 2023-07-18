@@ -26,12 +26,19 @@
 /*******************************************************************************
 * Type definitions
 *******************************************************************************/
+/**
+ * @name E_ENS_STATES
+ * @type enum
+ * @brief States for the ENS sensor state machine.
+ */
 typedef enum ENS_States
 {
-    EENS_CHECK_ID = 0,
-    EENS_CHECK_ST = 1,
-    EENS_NORMAL   = 2,
-    EENS_END,
+/*@{*/
+    EENS_CHECK_ID = 0,  /*!< Initial State, Check ID */
+    EENS_CHECK_ST = 1,  /*!< Sensor State Check      */
+    EENS_NORMAL   = 2,  /*!< Normal Sensor State     */
+    EENS_END,           /*!< End of States           */
+/*@}*/
 }E_ENS_STATES;
 
 /*******************************************************************************
