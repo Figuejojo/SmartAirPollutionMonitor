@@ -12,9 +12,14 @@
 /*******************************************************************************
 * Static Global Variables
 *******************************************************************************/
-#define ENS_CMD_ID (0x00)
-#define ENS_DATA_S (0x20)
-//#define ENS_TVOC_D (0x22)
+#define ENS_CMD_ID  (0x00)  /*!< ENS Command ID Register */
+#define ENS_OPM_MD  (0x10)  /*!< Opeation Mode Register  */
+#define ENS_DATA_S  (0x20)  /*!< Data State Register     */
+#define ENS_CAQI_D  (0x21)  /*!< CO2 AirQualityIndex Reg */
+#define ENS_TVOC_D  (0x22)  /*!< TVOC data register      */
+#define ENS_ECO2_D  (0x24)  /*!< ECO2 data register      */
+
+#define ENS_OPM_NOR (0x02)  /*!< Normal Operation Mode */ 
 
 /*******************************************************************************
 * Static Function Declarations
@@ -80,10 +85,11 @@ void vTaskSEN0515(void * pvParameters)
             case EENS_CHECK_ST:
                 eEnsState = eCheckEnsST();
                 Print_debug("ENS Status");
-                CycleTimeMs = (eEnsState == EENS_CHECK_ST)?(1000):(1000);
+                CycleTimeMs = (eEnsState == EENS_CHECK_ST)?(60000):(1000);
                 break;
 
             case EENS_NORMAL:
+                eEnsState = eGetEnsVal();
                 Print_debug("ENS Normal");
                 CycleTimeMs = 1000;
                 break;
@@ -136,22 +142,48 @@ E_ENS_STATES eCheckEnsID(void)
 E_ENS_STATES eCheckEnsST(void)
 {
     uint8_t const IDcmd = ENS_DATA_S;
-    uint8_t cBuff = 0;
+    uint8_t const OPcmd[2] = {ENS_OPM_MD,ENS_OPM_NOR}; //Opeation state
+    uint8_t cBuff[2] = {0};
     uint8_t msg[25];
-    int state = i2c_write_blocking(ENS_I2C, ENS_I2C_ADDR, &IDcmd, 1, true);    
-    if(PICO_OK <= state)
+
+    //Set the Sensor to normal operation state 
+    i2c_write_blocking(ENS_I2C, ENS_I2C_ADDR, OPcmd, 2, false);
+    i2c_write_blocking(ENS_I2C, ENS_I2C_ADDR, OPcmd, 1, true);
+    i2c_read_blocking(ENS_I2C, ENS_I2C_ADDR, cBuff, 1, false);
+    if(ENS_OPM_NOR != cBuff[0])
     {
-        i2c_read_blocking(ENS_I2C, ENS_I2C_ADDR, &cBuff, 1, false);
-        if(0 == (cBuff & (3u<<2)))
-        {
-            return EENS_NORMAL;
-        }
+        return EENS_CHECK_ST;
     }
+
+    i2c_write_blocking(ENS_I2C, ENS_I2C_ADDR, &IDcmd, 1, true);    
+    i2c_read_blocking(ENS_I2C, ENS_I2C_ADDR, cBuff, 1, false);
+    if(0 == (cBuff[0] & (3u<<2)))
+    {
+        return EENS_NORMAL;
+    }
+
     return EENS_CHECK_ST;
 }
 
 E_ENS_STATES eGetEnsVal(void)
 {
+    const uint8_t cmdCO2 = ENS_ECO2_D;
+    uint8_t cBuff[2] = {0};
+    uint16_t uhwCO2 = 0;
+    uint8_t msg[25] = {0};
 
+    int state = i2c_write_blocking(ENS_I2C, ENS_I2C_ADDR, &cmdCO2, 1, true);
+    if(PICO_OK <= state)
+    {
+        i2c_read_blocking(ENS_I2C, ENS_I2C_ADDR, cBuff, 2, false);
+        uhwCO2 = cBuff[0]|(cBuff[1]<<8u);
+        sprintf(msg,"CO2: %d",uhwCO2);
+        Print_debug(msg);
+    }
+    else
+    {
+        return EENS_CHECK_ID;
+    }    
+    return EENS_NORMAL;
 }
 
