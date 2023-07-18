@@ -12,16 +12,19 @@
 * Includes
 *******************************************************************************/
 #include "common.h"
+
 /*******************************************************************************
 * Macro Definitions
 *******************************************************************************/
-#define ENS_I2C       (i2c1)
-#define ENS_I2C1_SDA  (18)  // Raspberry Pi Pico Pin for TXD
-#define ENS_I2C1_SCL  (19)  // Raspberry Pi Pico Pin for RXD
+#define ENS_CYCLE_T   (30000)/*!< Data collection time [ms] (Normal Mode) */
+
+#define ENS_I2C       (i2c1)/*!< I2c channel */
+#define ENS_I2C1_SDA  (18)  /*!< Raspberry Pi Pico Pin for TXD */
+#define ENS_I2C1_SCL  (19)  /*!< Raspberry Pi Pico Pin for RXD */
 
 #define ENS_I2C_ADDR  (0x53)
 
-#define ENS_I2C1_FREQ (100000)  // I2C bus frequency in Hz 48K for speed mode.
+#define ENS_I2C1_FREQ (100000) /*!< I2C bus frequency in Hz 100K for Std mode. */
 
 /*******************************************************************************
 * Type definitions
@@ -56,14 +59,12 @@ void setupSEN0515(void);
 
 /** @name 	vTaskSEN0515
 *   @brief  Collect data from the SEN0515/ENS160 sensor
-*               - Every 15sec
+*               - Every \ref ENS_CYCLE_T
 *               - Send data out by using the process task. 
 *
 *   @param 	Void * parameters
 *   @return Void
 */
 void vTaskSEN0515(void * pvParameters);
-
-
 
 #endif //_SEN0515_H_

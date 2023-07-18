@@ -49,13 +49,13 @@ static E_ENS_STATES eCheckEnsST(void);
 /** @name 	eGetEnsVal
 *   @brief  statcic function to only be used in this file.
 *              - Get values from the ENS sensor including:
-*                  (TVOC, eCO2 and AQI)
+*                  (TVOC, eCO2) // AQI is possible as well in future implement.
 *              - Returns the next state.
 *               
-*   @param 	Void @todo: Implement values by ptr 
+*   @param 	ptr to SAPMS_t struct. 
 *   @return E_ENS_STATES 
 */
-static E_ENS_STATES eGetEnsVal(void);
+static E_ENS_STATES eGetEnsVal(SAPMS_t * pSAPMS);
 /*******************************************************************************
 * Function Definition
 *******************************************************************************/
@@ -66,32 +66,40 @@ static E_ENS_STATES eGetEnsVal(void);
 */
 void vTaskSEN0515(void * pvParameters)
 {
-    uint8_t msg[25] = {0};
-    uint8_t cBuff[4] = {0};
+    SAPMS_t sSAPMS = {0};
     uint16_t CycleTimeMs = 1000;
     E_ENS_STATES eEnsState = EENS_CHECK_ID;
     while(1)
     {
         switch (eEnsState)
         {
-            case EENS_CHECK_ID:
+            // This is the initial state and check for the ID of the sensor.
+            case EENS_CHECK_ID: 
                 eEnsState = eCheckEnsID();
                 if(eEnsState == EENS_CHECK_ID)
                 {
-                    Print_debug("ENS-Err ID");
-                    CycleTimeMs = 1000;
+                    CycleTimeMs = 60000;    //If the ID does not match it sleeps for a minute
                 }
                 break;
+
+            // This state set the operation mode and check for if the sensor state.
             case EENS_CHECK_ST:
                 eEnsState = eCheckEnsST();
-                Print_debug("ENS Status");
+                //If the sensor is on Warm-up it will loop here and check each minute. 
+                //If the sensor is in the First time, it will be called each minute until ready.
                 CycleTimeMs = (eEnsState == EENS_CHECK_ST)?(60000):(1000);
                 break;
 
             case EENS_NORMAL:
-                eEnsState = eGetEnsVal();
-                Print_debug("ENS Normal");
-                CycleTimeMs = 1000;
+                eEnsState = eGetEnsVal(&sSAPMS);
+                if(eEnsState == EENS_NORMAL)
+                {
+                    if(sSAPMS.sENS.fCO2 >= 0 && sSAPMS.sENS.fTVOC >= 0)
+                    {
+                        vCollectData(&sSAPMS,EENS);
+                    }
+                }
+                CycleTimeMs = (ENS_CYCLE_T); 
                 break;
 
             default:
@@ -105,7 +113,7 @@ void vTaskSEN0515(void * pvParameters)
 
 /**
 *	@name  setupSEN0515
-*   @Type  TVOC and CO2 sensor setup functon
+*   @Type  function
 */
 void setupSEN0515(void)
 {
@@ -118,15 +126,23 @@ void setupSEN0515(void)
   #endif
 }
 
+/**
+*	@name  eCheckEnsID
+*   @Type  static function
+*/
 E_ENS_STATES eCheckEnsID(void)
 {
     uint8_t const IDcmd = ENS_CMD_ID;
     uint8_t cBuff[2] = {0};
-    int state = i2c_write_blocking(ENS_I2C, ENS_I2C_ADDR, &IDcmd, 1, true);    
+    int state = PICO_OK;
+
+    // Request Sensor ID
+    state |= i2c_write_blocking(ENS_I2C, ENS_I2C_ADDR, &IDcmd, 1, true);
+    state |= i2c_read_blocking(ENS_I2C, ENS_I2C_ADDR, cBuff, 2, false); 
+
     if(PICO_OK <= state)
-    {
-        i2c_read_blocking(ENS_I2C, ENS_I2C_ADDR, cBuff, 2, false);
-        if(0x0160 != (cBuff[0]|cBuff[1]<<8))
+    {  
+        if(0x0160 != (cBuff[0]|cBuff[1]<<8))    // Check that the ID match.
         {
             Print_debug("ENS - No Maching ID");
             return EENS_CHECK_ID;//ER_I2C_ID;
@@ -139,24 +155,46 @@ E_ENS_STATES eCheckEnsID(void)
     return EENS_CHECK_ST;
 }
 
+/**
+*	@name  eCheckEnsST
+*   @Type  static function
+*/
 E_ENS_STATES eCheckEnsST(void)
 {
-    uint8_t const IDcmd = ENS_DATA_S;
+    uint8_t const DScmd = ENS_DATA_S;   // ENS Status.
     uint8_t const OPcmd[2] = {ENS_OPM_MD,ENS_OPM_NOR}; //Opeation state
     uint8_t cBuff[2] = {0};
     uint8_t msg[25];
+    int state = PICO_OK;
 
     //Set the Sensor to normal operation state 
-    i2c_write_blocking(ENS_I2C, ENS_I2C_ADDR, OPcmd, 2, false);
-    i2c_write_blocking(ENS_I2C, ENS_I2C_ADDR, OPcmd, 1, true);
-    i2c_read_blocking(ENS_I2C, ENS_I2C_ADDR, cBuff, 1, false);
-    if(ENS_OPM_NOR != cBuff[0])
+    state |= i2c_write_blocking(ENS_I2C, ENS_I2C_ADDR, OPcmd, 2, false);
+    state |= i2c_write_blocking(ENS_I2C, ENS_I2C_ADDR, OPcmd, 1, true);
+    state |= i2c_read_blocking(ENS_I2C, ENS_I2C_ADDR, cBuff, 1, false);
+    
+    // Check for any error on the I2C bus
+    if(0 < state)   
+    {
+        return EENS_CHECK_ID;
+    }
+    
+    // Check if the Opration mode was set to normal.
+    if(ENS_OPM_NOR != cBuff[0]) 
     {
         return EENS_CHECK_ST;
     }
 
-    i2c_write_blocking(ENS_I2C, ENS_I2C_ADDR, &IDcmd, 1, true);    
-    i2c_read_blocking(ENS_I2C, ENS_I2C_ADDR, cBuff, 1, false);
+    // Request the ENS status 
+    state |= i2c_write_blocking(ENS_I2C, ENS_I2C_ADDR, &DScmd, 1, true);    
+    state |= i2c_read_blocking(ENS_I2C, ENS_I2C_ADDR, cBuff, 1, false);
+
+    // Check for any error on the I2C bus
+    if(0 < state)   
+    {
+        return EENS_CHECK_ID;
+    }
+
+    // Change if the ENS state is normal. If not it might be on WarmUp or InitialStartUp.
     if(0 == (cBuff[0] & (3u<<2)))
     {
         return EENS_NORMAL;
@@ -165,29 +203,31 @@ E_ENS_STATES eCheckEnsST(void)
     return EENS_CHECK_ST;
 }
 
-E_ENS_STATES eGetEnsVal(void)
+/**
+*	@name  eGetEnsVal
+*   @Type  static function
+*/
+E_ENS_STATES eGetEnsVal(SAPMS_t * pSAPMS)
 {
     const uint8_t cmdCO2 = ENS_ECO2_D;
     const uint8_t cmdTVOC= ENS_TVOC_D;
     uint8_t cBuff[2] = {0};
-    uint16_t uhwCO2  = 0;
-    uint16_t uhwTVOC = 0;
-    uint8_t msg[25] = {0};
     int state = PICO_OK;
 
+    // Get CO2
     state = i2c_write_blocking(ENS_I2C, ENS_I2C_ADDR, &cmdCO2, 1, true);
     state|= i2c_read_blocking(ENS_I2C, ENS_I2C_ADDR, cBuff, 2, false);
-    uhwCO2 = (0<=state)?(cBuff[0]|(cBuff[1]<<8u)):-1;
+    pSAPMS->sENS.fCO2 = (0<=state) ? (cBuff[0]|(cBuff[1]<<8u)) : (-1);
+
+    // Get TVOC
     state = i2c_write_blocking(ENS_I2C, ENS_I2C_ADDR, &cmdTVOC, 1, true);
     state|= i2c_read_blocking(ENS_I2C, ENS_I2C_ADDR, cBuff, 2, false);
-    uhwTVOC = (0<=state)?(cBuff[0]|(cBuff[1]<<8u)):-1;
+    pSAPMS->sENS.fTVOC = (0<=state) ? (cBuff[0]|(cBuff[1]<<8u)) : (-1);
 
     if(PICO_OK > state)
     {
         return EENS_CHECK_ID;
     }
-    sprintf(msg,"CO2: %d - TVOC: %d",uhwCO2,uhwTVOC);
-    Print_debug(msg);
     return EENS_NORMAL;
 }
 
