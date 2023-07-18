@@ -12,9 +12,8 @@
 * Includes
 *******************************************************************************/
 #include "common.h"
-
 /*******************************************************************************
-* Type definitions
+* Macro Definitions
 *******************************************************************************/
 #define ENS_I2C       (i2c1)
 #define ENS_I2C1_SDA  (18)  // Raspberry Pi Pico Pin for TXD
@@ -23,6 +22,17 @@
 #define ENS_I2C_ADDR  (0x53)
 
 #define ENS_I2C1_FREQ (100000)  // I2C bus frequency in Hz 48K for speed mode.
+
+/*******************************************************************************
+* Type definitions
+*******************************************************************************/
+typedef enum ENS_States
+{
+    EENS_CHECK_ID = 0,
+    EENS_CHECK_ST = 1,
+    EENS_NORMAL   = 2,
+    EENS_END,
+}E_ENS_STATES;
 
 /*******************************************************************************
 * Function Prototypes

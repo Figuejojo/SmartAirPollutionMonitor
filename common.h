@@ -50,10 +50,13 @@
 typedef enum FUNC_ERRORS
 {
 /*@{*/
-    ER_CHECKSUM     = -1,   /*!< Checksum Error */
-    ER_GEN          = 0,    /*!< Generic Error  */
     NO_ERROR        = 1,    /*!< No Error       */
-    ER_END,
+    ER_GEN          = 0,    /*!< Generic Error  */
+    //Errors
+    ER_CHECKSUM     = -1,   /*!< Checksum Error */
+    //  I2C Errors
+    ER_I2C_ID       = -2,
+    ER_I2C_GEN      = -3,
 /*@}*/
 }ERR_t;
 

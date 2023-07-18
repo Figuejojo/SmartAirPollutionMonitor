@@ -17,6 +17,7 @@
 /*******************************************************************************
 * Static Function Declarations
 *******************************************************************************/
+static E_ENS_STATES eCheckEnsID(void);
 
 /*******************************************************************************
 * Function Definition
@@ -30,22 +31,33 @@ void vTaskSEN0515(void * pvParameters)
 {
     uint8_t msg[25] = {0};
     uint8_t cBuff[4] = {0};
+    uint16_t CycleTimeMs = 1000;
+    E_ENS_STATES eEnsState = EENS_CHECK_ID;
     while(1)
     {
-        uint8_t cmd = ENS_CMD_ID;
-        int state = i2c_write_blocking(ENS_I2C, ENS_I2C_ADDR, &cmd, 1, true);
-        if(PICO_OK <= state)
+        switch (eEnsState)
         {
-            i2c_read_blocking(ENS_I2C, ENS_I2C_ADDR, cBuff, 2, false);
-            sprintf(msg,"TVOC - %x",cBuff[0]|cBuff[1]<<8);
+            case EENS_CHECK_ID:
+                eEnsState = eCheckEnsID();
+                if(eEnsState == EENS_CHECK_ID)
+                {
+                    Print_debug("ENS-Err ID");
+                    CycleTimeMs = 1000;
+                }
+                break;
+            case EENS_CHECK_ST:
+                Print_debug("ENS Status");
+                break;
+
+            case EENS_NORMAL:
+                break;
+
+            default:
+                CycleTimeMs = 1000;
+                eEnsState = EENS_CHECK_ID;
+                break;
         }
-        else
-        {
-            sprintf(msg,"TVOC - ERROR %d",state);
-        }
-        //sprintf(msg,"%x %x",cBuff[0],cBuff[1]);
-        Print_debug(msg);
-        vTaskDelay(1000/portTICK_PERIOD_MS);
+        vTaskDelay(CycleTimeMs/portTICK_PERIOD_MS);
     }
 }
 
@@ -62,4 +74,25 @@ void setupSEN0515(void)
     gpio_pull_up(ENS_I2C1_SDA);
     gpio_pull_up(ENS_I2C1_SCL);  
   #endif
+}
+
+E_ENS_STATES eCheckEnsID(void)
+{
+    uint8_t const IDcmd = ENS_CMD_ID;
+    uint8_t cBuff[2] = {0};
+    int state = i2c_write_blocking(ENS_I2C, ENS_I2C_ADDR, &IDcmd, 1, true);    
+    if(PICO_OK <= state)
+    {
+        i2c_read_blocking(ENS_I2C, ENS_I2C_ADDR, cBuff, 2, false);
+        if(0x0160 != (cBuff[0]|cBuff[1]<<8))
+        {
+            Print_debug("ENS - No Maching ID");
+            return EENS_CHECK_ID;//ER_I2C_ID;
+        }
+    }
+    else
+    {
+        return EENS_CHECK_ID;//ER_I2C_GEN;
+    }
+    return EENS_CHECK_ST;
 }
