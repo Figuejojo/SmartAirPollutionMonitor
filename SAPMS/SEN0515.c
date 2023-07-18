@@ -73,6 +73,7 @@ void vTaskSEN0515(void * pvParameters)
     SAPMS_t sSAPMS = {0};
     uint16_t CycleTimeMs = 1000;
     E_ENS_STATES eEnsState = EENS_CHECK_ID;
+    uint8_t msg[25] = {0};
     while(1)
     {
         switch (eEnsState)
@@ -111,6 +112,8 @@ void vTaskSEN0515(void * pvParameters)
                 eEnsState = EENS_CHECK_ID;
                 break;
         }
+        sprintf(msg,"ENS State %d",eEnsState);
+        Print_debug(msg);
         vTaskDelay(CycleTimeMs/portTICK_PERIOD_MS);
     }
 }
@@ -173,11 +176,12 @@ E_ENS_STATES eCheckEnsST(void)
 
     //Set the Sensor to normal operation state 
     state |= i2c_write_blocking(ENS_I2C, ENS_I2C_ADDR, OPcmd, 2, false);
+
     state |= i2c_write_blocking(ENS_I2C, ENS_I2C_ADDR, OPcmd, 1, true);
     state |= i2c_read_blocking(ENS_I2C, ENS_I2C_ADDR, cBuff, 1, false);
     
     // Check for any error on the I2C bus
-    if(0 < state)   
+    if(0 > state)   
     {
         return EENS_CHECK_ID;
     }
@@ -193,7 +197,7 @@ E_ENS_STATES eCheckEnsST(void)
     state |= i2c_read_blocking(ENS_I2C, ENS_I2C_ADDR, cBuff, 1, false);
 
     // Check for any error on the I2C bus
-    if(0 < state)   
+    if(0 > state)   
     {
         return EENS_CHECK_ID;
     }

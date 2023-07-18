@@ -46,13 +46,13 @@ void vTaskPMS5003(void * pvParameters)
     SAPMS_t sSAPMS = {0};
 
     //According to the datasheet the sensor will have stable data after 30 sec
-    vTaskDelay(28000/portTICK_PERIOD_MS);
+    vTaskDelay(30000/portTICK_PERIOD_MS);
     while(1)
     {
         vTaskDelay(2000/portTICK_PERIOD_MS);
         svConfigPMS5003();
 
-        vTaskDelay(3000/portTICK_PERIOD_MS); 
+        vTaskDelay(18000/portTICK_PERIOD_MS); 
         if(svReadPM5003(&sPMS))
         {
             //If the update of values was correct
