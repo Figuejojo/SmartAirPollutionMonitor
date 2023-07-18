@@ -1,7 +1,7 @@
 /** @file ADA746.c
  *  @brief  //Write a brief description 
  *
- *  @author //Exam Id
+ *  @author //Y3910898
  */
 #include "ADA746.h"
 
@@ -33,6 +33,10 @@ void vTaskGPS(void * pvParameters)
 void GPS_setup(void)
 {
 #if USE_ADA746 == 1
-//Implementation here
+    // Uart initialization
+    uart_init(ADA_USART, ADA_BAUD);
+    // Uart pin setup
+    gpio_set_function(ADA_TX, GPIO_FUNC_UART);
+    gpio_set_function(ADA_RX, GPIO_FUNC_UART);
 #endif
 }

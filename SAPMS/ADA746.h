@@ -16,8 +16,12 @@
 /*******************************************************************************
 * Type definitions
 *******************************************************************************/
-#define ADA746_TX (0)  // Raspberry Pi Pico Pin for TXD
-#define ADA746_RX (0)  // Raspberry Pi Pico Pin for RXD
+#define ADA_TX (0)  // Raspberry Pi Pico Pin for TXD
+#define ADA_RX (1)  // Raspberry Pi Pico Pin for RXD
+
+#define ADA_BAUD (9600)
+
+#define ADA_USART  (uart0)  /*!< UART interface            */
 
 /*******************************************************************************
 * Function Prototypes
