@@ -168,22 +168,26 @@ E_ENS_STATES eCheckEnsST(void)
 E_ENS_STATES eGetEnsVal(void)
 {
     const uint8_t cmdCO2 = ENS_ECO2_D;
+    const uint8_t cmdTVOC= ENS_TVOC_D;
     uint8_t cBuff[2] = {0};
-    uint16_t uhwCO2 = 0;
+    uint16_t uhwCO2  = 0;
+    uint16_t uhwTVOC = 0;
     uint8_t msg[25] = {0};
+    int state = PICO_OK;
 
-    int state = i2c_write_blocking(ENS_I2C, ENS_I2C_ADDR, &cmdCO2, 1, true);
-    if(PICO_OK <= state)
-    {
-        i2c_read_blocking(ENS_I2C, ENS_I2C_ADDR, cBuff, 2, false);
-        uhwCO2 = cBuff[0]|(cBuff[1]<<8u);
-        sprintf(msg,"CO2: %d",uhwCO2);
-        Print_debug(msg);
-    }
-    else
+    state = i2c_write_blocking(ENS_I2C, ENS_I2C_ADDR, &cmdCO2, 1, true);
+    state|= i2c_read_blocking(ENS_I2C, ENS_I2C_ADDR, cBuff, 2, false);
+    uhwCO2 = (0<=state)?(cBuff[0]|(cBuff[1]<<8u)):-1;
+    state = i2c_write_blocking(ENS_I2C, ENS_I2C_ADDR, &cmdTVOC, 1, true);
+    state|= i2c_read_blocking(ENS_I2C, ENS_I2C_ADDR, cBuff, 2, false);
+    uhwTVOC = (0<=state)?(cBuff[0]|(cBuff[1]<<8u)):-1;
+
+    if(PICO_OK > state)
     {
         return EENS_CHECK_ID;
-    }    
+    }
+    sprintf(msg,"CO2: %d - TVOC: %d",uhwCO2,uhwTVOC);
+    Print_debug(msg);
     return EENS_NORMAL;
 }
 
