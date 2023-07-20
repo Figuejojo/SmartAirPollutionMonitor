@@ -28,9 +28,10 @@ void vTask_AM2320(void * pvParameters)
 void vSetupAM2320(void)
 {
 #if USE_AM2320 == 1
-    i2c_inst_t *AM2320_interface = i2c0;
-    i2c_init(AM2320_interface, AM_I2C0_FRQ);
+    // Initialize the I2C peripheral for the AM2320
+    i2c_init(AM_I2C, AM_I2C0_FRQ);
 
+    // Initialize the GPIO peripherals in I2C mode.
     gpio_set_function(AM_I2C0_SDA, GPIO_FUNC_I2C);
     gpio_set_function(AM_I2C0_SCL, GPIO_FUNC_I2C);
     gpio_pull_up(AM_I2C0_SDA);
