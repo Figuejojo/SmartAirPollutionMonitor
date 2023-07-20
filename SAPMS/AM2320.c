@@ -17,16 +17,23 @@ extern QueueHandle_t qDebugPrint;
 */
 void vTask_AM2320(void * pvParameters)
 {
-    #if 0
-    i2c_inst_t *AM2320_interface = i2c0;
-    i2c_init(AM2320_interface, 400 * 1000);
 
-    gpio_set_function(AM2320_SDA, GPIO_FUNC_I2C);
-    gpio_set_function(AM2320_SCL, GPIO_FUNC_I2C);
-    #endif
 
     while(true)
     {
         vTaskDelay(2000/portTICK_PERIOD_MS);
     }
+}
+
+void vSetupAM2320(void)
+{
+#if USE_AM2320 == 1
+    i2c_inst_t *AM2320_interface = i2c0;
+    i2c_init(AM2320_interface, AM_I2C0_FRQ);
+
+    gpio_set_function(AM_I2C0_SDA, GPIO_FUNC_I2C);
+    gpio_set_function(AM_I2C0_SCL, GPIO_FUNC_I2C);
+    gpio_pull_up(AM_I2C0_SDA);
+    gpio_pull_up(AM_I2C0_SCL);
+#endif
 }
