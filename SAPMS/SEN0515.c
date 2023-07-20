@@ -92,7 +92,7 @@ void vTaskSEN0515(void * pvParameters)
                 eEnsState = eCheckEnsST();
                 //If the sensor is on Warm-up it will loop here and check each minute. 
                 //If the sensor is in the First time, it will be called each minute until ready.
-                CycleTimeMs = (eEnsState == EENS_CHECK_ST)?(60000):(1000);
+                CycleTimeMs = (eEnsState == EENS_NORMAL)?(ENS_CYCLE_T):(60000);
                 break;
 
             case EENS_NORMAL:
