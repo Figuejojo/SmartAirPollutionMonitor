@@ -1,11 +1,8 @@
 /** @file Main.c
  *  @brief This is the main file of the Smart Air Pollution Monitor.
  *
- *  @author Y3913624
+ *  @author Jose Jorge Figueroa Figueroa
  */
-
-/** @todo: assigned task priorities. */ 
-
 /*******************************************************************************
 * Includes
 *******************************************************************************/

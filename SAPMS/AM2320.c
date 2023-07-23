@@ -21,7 +21,7 @@
 *              - Calculate the 16bit CRC according to the Datasheet.
 *               
 *   @param 	Void
-*   @return E_ENS_STATES 
+*   @return 16bit CRC calculation 
 */
 static uint16_t bCheckCRC16(uint8_t * ptrBuff, uint8_t lenBuff);
 
@@ -93,7 +93,7 @@ static uint16_t bCheckCRC16(uint8_t * ptrBuff, uint8_t lenBuff)
             if(crc & 0x01)
             {
                 crc >>= 1;
-                crc ^= 0xA001;
+                crc ^= 0xA001; //Datasheet value for CRC calculation.
             }
             else
             {
