@@ -69,6 +69,15 @@ typedef struct SAPMS
     /*@}*/
     }sENS;
     
+    /** @name  SAPMS.sTEM */
+    struct
+    {
+    /*@{*/
+        float fTemp; /*!< AM2320 Temperature flaot value  */
+        float fHum;  /*!< AM2320 Humidity flaot value  */
+    /*@}*/
+    }sAM;
+    
     /** @todo Add other sensors as they are finisehd */
 /*@}*/
 }SAPMS_t;

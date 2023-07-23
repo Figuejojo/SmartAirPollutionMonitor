@@ -38,8 +38,7 @@ void vTask_AM2320(void * pvParameters)
     const uint8_t wakeCmd = 0x00;
     uint16_t CRC = 0;
     int state = PICO_OK;
-    volatile float fHumidity = 0.0f;
-    volatile float fTemp = 0.0f;
+    SAPMS_t sAMS = {0};
     while(true)
     {
         uint8_t cbuff[8] = {0};
@@ -56,8 +55,9 @@ void vTask_AM2320(void * pvParameters)
             CRC = cbuff[7]<<8|cbuff[6];
             if(CRC == bCheckCRC16(cbuff,sizeof(cbuff)-2))
             {
-                fHumidity = (cbuff[2]<<8|cbuff[3])/10.0;
-                fTemp = (cbuff[4]<<8|cbuff[5])/10.0;   
+                sAMS.sAM.fHum = (cbuff[2]<<8|cbuff[3])/10.0;
+                sAMS.sAM.fTemp = (cbuff[4]<<8|cbuff[5])/10.0;   
+                vCollectData(&sAMS,EAM);
             }
         }
         

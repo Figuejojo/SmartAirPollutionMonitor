@@ -11,7 +11,6 @@
 * Includes
 *******************************************************************************/
 #include "SEN0515.h"
-#include "hardware/i2c.h"
 
 /*******************************************************************************
 * Static Global Variables
@@ -112,8 +111,8 @@ void vTaskSEN0515(void * pvParameters)
                 eEnsState = EENS_CHECK_ID;
                 break;
         }
-        sprintf(msg,"ENS State %d",eEnsState);
-        Print_debug(msg);
+        //sprintf(msg,"ENS State %d",eEnsState);
+        //Print_debug(msg);
         vTaskDelay(CycleTimeMs/portTICK_PERIOD_MS);
     }
 }

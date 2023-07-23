@@ -17,7 +17,7 @@
 /*******************************************************************************
 * Macro Definitions
 *******************************************************************************/
-#define AM_CYCLE_T  (1000)  /*!< Data Collection time[ms] */
+#define AM_CYCLE_T  (60000)  /*!< Data Collection time[ms] */
 
 #define AM_I2C      (i2c0)  /*!< I2C channel */
 #define AM_I2C0_SDA (12)    /*!< Raspberry Pi Pico Pin for SDA */ 

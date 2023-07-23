@@ -44,6 +44,12 @@ void vTaskProcess(void * pvParameters)
                 sprintf(msg,"CO2 %0.1f ,TVOC %0.1f",cacheData.sENS.fCO2, cacheData.sENS.fTVOC);
                 break;
 
+            case EAM:
+                cacheData.sAM.fHum = (cacheData.sAM.fHum + xQdata.sAM.fHum)/2;
+                cacheData.sAM.fTemp = (cacheData.sAM.fTemp + xQdata.sAM.fTemp)/2;
+                sprintf(msg,"Hum %0.1f ,Temp %0.1f",cacheData.sAM.fHum, cacheData.sAM.fTemp);
+                break;
+
             default:
                 sprintf(msg,"No New Data\n");
                 break;
