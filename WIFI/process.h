@@ -46,15 +46,40 @@ typedef enum
  */
 typedef struct SAPMS
 {
-    SAPMS_e eSRC;
+/*@{*/
+    SAPMS_e eSRC;   /*!< Enum for collecting incomming Queue values */
+
+    /** @name  SAPMS.sPM */
     struct
     {
-        float fPM1;
-        float fPM25;
-        float fPM10;
-    } sPM;
+    /*@{*/
+        float fPM1; /*!< PM 1[um] float value   */
+        float fPM25;/*!< PM 2.5[um] float value */
+        float fPM10;/*!< PM 10[um] float value  */
+    /*@}*/
+    } sPM; 
+
+    /** @name  SAPMS.sENS */
+    struct 
+    {
+    /*@{*/
+        float fCO2; /*!< ENS160 CO2 float value  */
+        float fTVOC;/*!< ENS160 TVOC float value */
+        //uint8_t AQI;
+    /*@}*/
+    }sENS;
     
-    /** @todo Add other sensors as they are finisehd*/
+    /** @name  SAPMS.sTEM */
+    struct
+    {
+    /*@{*/
+        float fTemp; /*!< AM2320 Temperature flaot value  */
+        float fHum;  /*!< AM2320 Humidity flaot value  */
+    /*@}*/
+    }sAM;
+    
+    /** @todo Add other sensors as they are finisehd */
+/*@}*/
 }SAPMS_t;
 
 /*******************************************************************************

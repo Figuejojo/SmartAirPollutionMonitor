@@ -43,6 +43,7 @@ void vTaskWireless(void * pvParameters)
 
     while(1)
     {
+#if !defined(SSID_WIFI) && !defined(PSWD_WIFI)
         status = cyw43_wifi_link_status(&cyw43_state,CYW43_ITF_STA);
         if(isConnected == true)
         {
@@ -53,14 +54,20 @@ void vTaskWireless(void * pvParameters)
         }
         else
         {
-            if (cyw43_arch_wifi_connect_timeout_ms(SSID_WIFI, PSWD_WIFI, CYW43_AUTH_WPA2_AES_PSK, 5000)) {
+            if( cyw43_arch_wifi_connect_timeout_ms(SSID_WIFI, PSWD_WIFI, CYW43_AUTH_WPA2_AES_PSK, 5000) )
+            {
                 sprintf(msg,"Fail to Connect %d",status);
                 Print_debug(msg);
-            } else {
+            } 
+            else 
+            {
                 Print_debug("Connected.");
                 isConnected = true;
             }
         }
+#else
+        Print_debug("No SSID nor Password");
+#endif
         vTaskDelay(300/portTICK_PERIOD_MS);
     }
 }
