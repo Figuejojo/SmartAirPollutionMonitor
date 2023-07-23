@@ -1,8 +1,6 @@
-/** @file bapiI2C0.h
+/** @file AM2320.h
  *  @brief This is the main file for I2C.
  *          Currently it is also for AM2320 
- *          TODO: Verify if the current structure is good or
- *                  Create an independent folder for AM2320
  *
  *  @author Y3913624
  */
@@ -19,8 +17,9 @@
 /*******************************************************************************
 * Macro Definitions
 *******************************************************************************/
+#define AM_CYCLE_T  (1000)  /*!< Data Collection time[ms] */
 
-#define AM_I2C      (i2c0)
+#define AM_I2C      (i2c0)  /*!< I2C channel */
 #define AM_I2C0_SDA (12)    /*!< Raspberry Pi Pico Pin for SDA */ 
 #define AM_I2C0_SCL (13)    /*!< Raspberry Pi Pico Pin for SCL */
 
