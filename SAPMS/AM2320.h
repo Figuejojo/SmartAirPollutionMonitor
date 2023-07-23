@@ -24,14 +24,14 @@
 #define AM_I2C0_SDA (12)    /*!< Raspberry Pi Pico Pin for SDA */ 
 #define AM_I2C0_SCL (13)    /*!< Raspberry Pi Pico Pin for SCL */
 
-#define AM_ADR      (0xB8)  /*!< AM2320 I2C ADDRESS */
-#define AM_I2C0_FRQ (10000) /*!< I2C bus frequency in 100K Hz for std mode */
+#define AM_ADR      (0x5C)  /*!< AM2320 I2C ADDRESS  0xB8  5C*/
+#define AM_I2C0_FRQ (100000) /*!< I2C bus frequency in 100K Hz for std mode */
 
 /*******************************************************************************
 * Type definitions
 *******************************************************************************/
 
-/*******************************************************************************
+/***********************************  ********************************************
 * Function Prototypes
 *******************************************************************************/
 /** @name 	vTask_AM2320

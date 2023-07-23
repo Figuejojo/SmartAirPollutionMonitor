@@ -46,6 +46,7 @@ int main()
     //*** Queues Creation and setup  
     debug_queue_setup();
     GPS_setup();
+    vSetupAM2320();
     vSetupPMS5003();
     vSetupSEN0515();
     vSetupWifi();
