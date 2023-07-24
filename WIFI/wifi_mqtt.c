@@ -54,7 +54,8 @@ void vTaskWireless(void * pvParameters)
     {
         if(0 > cyw43_wifi_link_status(&cyw43_state, CYW43_ITF_STA))
         {
-           printf("Disconnected\n"); 
+            cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, false);
+            printf("Disconnected\n"); 
         }
         else
         {
