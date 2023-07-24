@@ -25,12 +25,20 @@
 */
 void vTaskWireless(void * pvParameters)
 {
-    Print_debug("WirelessTask");
-	Print_debug("Connecting to Wi-Fi...");
+    if (cyw43_arch_init()) {
+        printf("failed to initialise\n");
+    }
+    cyw43_arch_enable_sta_mode();
+    printf("Connecting to Wi-Fi...\n");
+    if (cyw43_arch_wifi_connect_timeout_ms(SSID_WIFI, PSWD_WIFI, CYW43_AUTH_WPA2_AES_PSK, 30000)) {
+        printf("failed to connect.\n");
+    } else {
+        printf("Connected.\n");
+    }
 
     while(1)
     {
-
+        
         vTaskDelay(300/portTICK_PERIOD_MS);
     }
 }
@@ -41,7 +49,7 @@ void vTaskWireless(void * pvParameters)
 */
 ERR_t vSetupWifi(void)
 {
-#if (USE_WIRELESS == 1)
+#if 0//(USE_WIRELESS == 1)
     if (cyw43_arch_init()) {
         printf("failed to initialise\n");
         return ER_WIFI;

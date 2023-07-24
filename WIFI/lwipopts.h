@@ -9,6 +9,22 @@
 #ifndef NO_SYS
 #define NO_SYS                      0
 #endif
+
+#if !NO_SYS
+#define TCPIP_THREAD_STACKSIZE 1024
+#define DEFAULT_THREAD_STACKSIZE 1024
+#define DEFAULT_RAW_RECVMBOX_SIZE 8
+#define TCPIP_MBOX_SIZE 8
+#define LWIP_TIMEVAL_PRIVATE 0
+
+// not necessary, can be done either way
+#define LWIP_TCPIP_CORE_LOCKING_INPUT 1
+
+// ping_thread sets socket receive timeout, so enable this feature
+#define LWIP_SO_RCVTIMEO 1
+#endif
+
+
 // allow override in some examples
 #ifndef LWIP_SOCKET
 #define LWIP_SOCKET                 0
