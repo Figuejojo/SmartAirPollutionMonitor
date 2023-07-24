@@ -62,7 +62,7 @@ int main()
 #if USE_WIRELESS == 1
     if(NO_ERROR == errWifi)
     {
-        xTaskCreate(vTaskWireless,"Wireless",256,NULL,4,NULL);
+        //xTaskCreate(vTaskWireless,"Wireless",256,NULL,4,NULL);
     }
 #endif
 #if USE_ADA746 == 1
@@ -103,6 +103,6 @@ void TaskLEDBlinkvoid(void * pvParameters)
         gpio_put(LED_PIN,1);
         vTaskDelay(500/portTICK_PERIOD_MS);
         gpio_put(LED_PIN,0);
-        //Print_debug(msg);
+        Print_debug(msg);
     }
 }

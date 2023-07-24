@@ -10,7 +10,8 @@ add_library(WIFI ${WIFI_SRCS})
 target_include_directories(WIFI PUBLIC .)
 
 target_link_libraries(WIFI PUBLIC
-    pico_cyw43_arch_lwip_poll
+    pico_cyw43_arch_lwip_sys_freertos
+    #FreeRTOS-Kernel-Heap4
     pico_stdlib 
     freertos  
 )
