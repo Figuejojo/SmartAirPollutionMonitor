@@ -26,6 +26,7 @@ void vTaskProcess(void * pvParameters)
     SAPMS_t xQdata = {0};
     SAPMS_t cacheData = {0};
     uint8_t msg[30] = {0};
+    uint8_t JSON[500];
     while(1)
     {
         xQueueReceive(sgqSensorData,&xQdata,portMAX_DELAY);
@@ -50,6 +51,24 @@ void vTaskProcess(void * pvParameters)
                 sprintf(msg,"Hum %0.1f ,Temp %0.1f",cacheData.sAM.fHum, cacheData.sAM.fTemp);
                 break;
 
+            case EWIFI:
+#if 0
+                /** @todo:  do this whenever, the timer has finisehd and has info from all sensors.**/
+                //JSON formatter:
+                sprintf(JSON,"{\"SAPM_ID\": %s, \"sensors\":[ \
+                            {\"name\":\"temp\",\"value\":%f},\
+                            {\"name\":\"hum\",\"value\":%f},\
+                            {\"name\":\"PM1\",\"value\":%f},\
+                            {\"name\":\"PM25\",\"value\":%f},\
+                            {\"name\":\"PM10\",\"value\":%f},\
+                            {\"name\":\"TVOC\",\"value\":%f},\
+                            {\"name\":\"CO2\",\"value\":%f}\
+                         ]}",SAPM_ID, cacheData.sAM.fTemp,cacheData.sAM.fHum,\
+                         cacheData.sPM.fPM1,cacheData.sPM.fPM25,cacheData.sPM.fPM10,\
+                         cacheData.sENS.fTVOC,cacheData.sENS.fCO2);
+                //Print_debug()
+                break;
+#endif
             default:
                 sprintf(msg,"No New Data\n");
                 break;

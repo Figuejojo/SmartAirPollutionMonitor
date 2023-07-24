@@ -33,9 +33,9 @@ typedef enum
     EPMS = 0,           /*!< PMS sensor data enum */
     EENS,               /*!< SEN0515/ENS160 sensor data */
     EAM,                /*!< AM2320 sensor data */
-    EGPS,               /*!< GOS sensor data */
-    //ESAPM,      //SAPM 
-    SAPMS_END,          /*!< GOS sensor data */
+    EGPS,               /*!< GPS sensor data */
+    EWIFI,              /*!< Send format to WIFI thread. */
+    SAPMS_END,          /*!< Enum end */
 /*@}*/
 }SAPMS_e;
 

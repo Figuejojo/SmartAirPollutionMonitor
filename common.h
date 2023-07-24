@@ -29,6 +29,8 @@
 /*******************************************************************************
 * Macro Definitions
 *******************************************************************************/
+#define SAPM_ID     "001"
+
 #define ENABLE_DEBUG (1)    /*!< On/Off Debug prints */
 
 #define USE_WIRELESS (1)    /*!< On/Off Wireless Task */
