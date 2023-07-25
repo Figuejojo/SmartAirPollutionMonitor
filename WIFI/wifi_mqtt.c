@@ -23,29 +23,17 @@
 /*******************************************************************************
 * Static Function Declarations
 *******************************************************************************/
+static void svConnect();
+
+
 /**
 *	@name vTaskWireless
 *   @type Task
 */
 void vTaskWireless(void * pvParameters)
 {
-    if (cyw43_arch_init()) 
-    {
-        cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, false);
-        printf("failed to initialise\n");
-    }
-    cyw43_arch_enable_sta_mode();
-    printf("Connecting to Wi-Fi...\n");
-    if (cyw43_arch_wifi_connect_timeout_ms(SSID_WIFI, PSWD_WIFI, CYW43_AUTH_WPA2_AES_PSK, 30000)) 
-    {
-        cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, false);
-        printf("failed to connect.\n");
-    } 
-    else 
-    {
-        printf("Connected.\n");
-        cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, true);
-    }
+    svConnect();
+
     struct udp_pcb* pcb = udp_new();
     ip_addr_t addr;
     ipaddr_aton(BEACON_TARGET, &addr);
@@ -67,6 +55,7 @@ void vTaskWireless(void * pvParameters)
             pbuf_free(p);
             if (er != ERR_OK) {
                 printf("Failed to send UDP packet! error=%d", er);
+                cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, false);
             } else {
                 printf("Sent packet %d\n", counter);
                 counter++;
@@ -85,3 +74,24 @@ ERR_t vSetupWifi(void)
     return NO_ERROR;
 }
 
+void svConnect()
+{
+    if (cyw43_arch_init()) 
+    {
+        cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, false);
+        printf("failed to initialise\n");
+    }
+    cyw43_arch_enable_sta_mode();
+
+    printf("Connecting to Wi-Fi...\n");
+    if (cyw43_arch_wifi_connect_timeout_ms(SSID_WIFI, PSWD_WIFI, CYW43_AUTH_WPA2_AES_PSK, 30000)) 
+    {
+        cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, false);
+        printf("failed to connect.\n");
+    } 
+    else 
+    {
+        printf("Connected.\n");
+        cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, true);
+    }
+}
