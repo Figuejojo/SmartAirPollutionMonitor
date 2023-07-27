@@ -15,8 +15,10 @@
 /*******************************************************************************
 * Type definitions
 *******************************************************************************/
-#define SSID_WIFI 
-#define PSWD_WIFI 
+#define SSID_WIFI "JJRAZER"     //Uncommit and insert your WIFI Name as "Name"
+#define PSWD_WIFI "#JJRZ12345"  //Uncommit and insert yout Wifi PSWD as "Pswd"
+
+#define TIME2CONNECT (30000)
 /*******************************************************************************
 * Function Prototypes
 *******************************************************************************/

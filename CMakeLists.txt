@@ -12,7 +12,7 @@ project(SAPM)
 pico_sdk_init()
 
 # Subdirectories
-add_subdirectory(freertos)
+add_subdirectory(libs)
 add_subdirectory(SAPMS)
 add_subdirectory(WIFI)
 
