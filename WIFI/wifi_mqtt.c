@@ -9,9 +9,8 @@
 *******************************************************************************/
 #include "wifi_mqtt.h"
 #include "pico/cyw43_arch.h"
-#include "lwip/pbuf.h"
-#include "lwip/udp.h"
-
+#include "lwip/dns.h"
+#include "lwip/apps/mqtt.h"
 /*******************************************************************************
 * Static Global Variables
 *******************************************************************************/
@@ -19,11 +18,54 @@
 #define BEACON_MSG_LEN_MAX 127
 #define BEACON_TARGET "255.255.255.255"
 #define BEACON_INTERVAL_MS 1000
+#define ENDPOINT "global.azure-devices-provisioning.net"
 
 /*******************************************************************************
 * Static Function Declarations
 *******************************************************************************/
 static void svConnect();
+
+/*******************************************************************************
+* Static Variables Declarations
+*******************************************************************************/
+static mqtt_client_t* mqtt_client;
+
+static const struct mqtt_connect_client_info_t mqtt_client_info =
+{
+  "test",
+  NULL, /* user */
+  NULL, /* pass */
+  100,  /* keep alive */
+  NULL, /* will_topic */
+  NULL, /* will_msg */
+  0,    /* will_qos */
+  0     /* will_retain */
+#if LWIP_ALTCP && LWIP_ALTCP_TLS
+  , NULL
+#endif
+};
+
+/*******************************************************************************
+* Static Function Definitions
+*******************************************************************************/
+#if 1//LWIP_DNS_APP && LWIP_DNS
+static void dns_found(const char *name, const ip_addr_t *addr, void *arg)
+{
+  LWIP_UNUSED_ARG(arg);
+  printf("%s: %s\n", name, addr ? ipaddr_ntoa(addr) : "<not found>");
+}
+
+static void dns_dorequest(void *arg)
+{
+  const char* dnsname = ENDPOINT;
+  ip_addr_t dnsresp;
+  LWIP_UNUSED_ARG(arg);
+
+  if (dns_gethostbyname(dnsname, &dnsresp, dns_found, NULL) == ERR_OK) {
+    dns_found(dnsname, &dnsresp, NULL);
+  }
+}
+#endif /* LWIP_DNS_APP && LWIP_DNS */
 
 
 /**
@@ -34,9 +76,9 @@ void vTaskWireless(void * pvParameters)
 {
     svConnect();
 
-    struct udp_pcb* pcb = udp_new();
-    ip_addr_t addr;
-    ipaddr_aton(BEACON_TARGET, &addr);
+    mqtt_client = mqtt_client_new();
+
+
     int counter = 0;
     while(1)
     {
@@ -47,19 +89,7 @@ void vTaskWireless(void * pvParameters)
         }
         else
         {
-            struct pbuf *p = pbuf_alloc(PBUF_TRANSPORT, BEACON_MSG_LEN_MAX+1, PBUF_RAM);
-            char *req = (char *)p->payload;
-            memset(req, 0, BEACON_MSG_LEN_MAX+1);
-            snprintf(req, BEACON_MSG_LEN_MAX, "%d\n", counter);
-            err_t er = udp_sendto(pcb, p, &addr, UDP_PORT);
-            pbuf_free(p);
-            if (er != ERR_OK) {
-                printf("Failed to send UDP packet! error=%d", er);
-                cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, false);
-            } else {
-                printf("Sent packet %d\n", counter);
-                counter++;
-            }
+            dns_dorequest(NULL);
         }
         vTaskDelay(5000/portTICK_PERIOD_MS);
     }
