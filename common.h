@@ -12,14 +12,15 @@
 * Includes
 *******************************************************************************/
 #include <FreeRTOS.h>
-#include <FreeRTOS-Kernel/include/queue.h>
+#include <queue.h>
 #include <task.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
 #include "pico/stdlib.h"
 
-// Pico Peripherals
+
+// Pico Peripherals/
 #include "hardware/uart.h"
 
 // Debug includes

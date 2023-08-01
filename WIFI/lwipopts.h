@@ -24,6 +24,17 @@
 #define LWIP_SO_RCVTIMEO 1
 #endif
 
+//* From Example mbedtls */
+//#undef TCP_WND
+//#define TCP_WND  16384
+
+#define LWIP_ALTCP               1
+#define LWIP_ALTCP_TLS           1
+#define LWIP_ALTCP_TLS_MBEDTLS   1
+
+//#define LWIP_DEBUG 1
+//#define ALTCP_MBEDTLS_DEBUG  LWIP_DBG_ON
+//**End of mbedtls example */
 
 // allow override in some examples
 #ifndef LWIP_SOCKET

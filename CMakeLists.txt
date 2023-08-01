@@ -56,7 +56,7 @@ target_link_libraries(SAPM PUBLIC
     SAPMS 
     WIFI 
     az_core
-    az_iot_provisioning
+    az_iot_hub
     az_noplatform
     )
 
