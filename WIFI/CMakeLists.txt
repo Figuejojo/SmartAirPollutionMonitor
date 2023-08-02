@@ -18,6 +18,7 @@ target_link_libraries(WIFI PUBLIC
     az_iot_provisioning
     az_noplatform
     pico_lwip_mbedtls
+    pico_lwip_mqtt
     pico_mbedtls
 )
 
