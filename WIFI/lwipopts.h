@@ -32,6 +32,10 @@
 #if PICO_CYW43_ARCH_POLL
 #define MEM_LIBC_MALLOC             1
 #else
+
+// HTTP
+#define LWIP_HTTPD_SUPPORT_POST 1
+
 // MEM_LIBC_MALLOC is incompatible with non polling versions
 #define MEM_LIBC_MALLOC             0
 #endif

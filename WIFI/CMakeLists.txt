@@ -14,5 +14,6 @@ target_link_libraries(WIFI PUBLIC
     #FreeRTOS-Kernel-Heap4
     pico_stdlib 
     freertos  
+    pico_lwip_http
 )
 
