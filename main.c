@@ -1,11 +1,8 @@
 /** @file Main.c
  *  @brief This is the main file of the Smart Air Pollution Monitor.
  *
- *  @author Y3913624
+ *  @author Jose Jorge Figueroa Figueroa
  */
-
-/** @todo: assigned task priorities. */ 
-
 /*******************************************************************************
 * Includes
 *******************************************************************************/
@@ -46,8 +43,9 @@ int main()
     //*** Queues Creation and setup  
     debug_queue_setup();
     GPS_setup();
+    vSetupAM2320();
     vSetupPMS5003();
-    setupSEN0515();
+    vSetupSEN0515();
     vSetupWifi();
     vSetupProcess();
     
@@ -101,6 +99,6 @@ void TaskLEDBlinkvoid(void * pvParameters)
         gpio_put(LED_PIN,1);
         vTaskDelay(500/portTICK_PERIOD_MS);
         gpio_put(LED_PIN,0);
-        Print_debug(msg);
+        //Print_debug(msg);
     }
 }
