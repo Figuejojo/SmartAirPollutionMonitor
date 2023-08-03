@@ -10,12 +10,18 @@
 #include "process.h"
 
 /*******************************************************************************
-* Static Global Variables
+* Static and/or Global Variables
 *******************************************************************************/
 static QueueHandle_t sgqSensorData; /*!< SensorData FreeRTOS Queue */
 
 /*******************************************************************************
 * Static Function Declarations
+*******************************************************************************/
+static void alarm_irq(void);
+static void alarm_in_us(uint32_t delay_us);
+
+/*******************************************************************************
+* Function Definition
 *******************************************************************************/
 /**
 *	@name vTaskWireless
@@ -27,6 +33,8 @@ void vTaskProcess(void * pvParameters)
     SAPMS_t cacheData = {0};
     uint8_t msg[30] = {0};
     uint8_t JSON[500];
+    //alarm_in_us(180000000); //5min
+    alarm_in_us(5000000); //5sec
     while(1)
     {
         xQueueReceive(sgqSensorData,&xQdata,portMAX_DELAY);
@@ -52,6 +60,8 @@ void vTaskProcess(void * pvParameters)
                 break;
 
             case EWIFI:
+                sprintf(msg,"Data to WIFI");
+                alarm_in_us(5000000); //5sec
 #if 0
                 /** @todo:  do this whenever, the timer has finisehd and has info from all sensors.**/
                 //JSON formatter:
@@ -69,6 +79,7 @@ void vTaskProcess(void * pvParameters)
                 //Print_debug()
                 break;
 #endif
+                break;
             default:
                 sprintf(msg,"No New Data\n");
                 break;
@@ -94,4 +105,43 @@ void vCollectData(SAPMS_t * psSAPMS, SAPMS_e ESAPMS)
 {
     psSAPMS->eSRC = ESAPMS;
     xQueueSendToBack(sgqSensorData,psSAPMS,0);
+}
+
+/**
+*	@name Alarm in us
+*   @type static void function
+*/
+void alarm_in_us(uint32_t delay_us) 
+{
+    // Enable the interrupt for our alarm (the timer outputs 4 alarm irqs)
+    hw_set_bits(&timer_hw->inte, 1u << 0);
+    // Set irq handler for alarm irq
+    irq_set_exclusive_handler(TIMER_IRQ_0, alarm_irq);
+    // Enable the alarm irq
+    irq_set_enabled(TIMER_IRQ_0, true);
+    // Enable interrupt in block and at processor
+
+    // Alarm is only 32 bits so if trying to delay more
+    // than that need to be careful and keep track of the upper
+    // bits
+    uint64_t target = timer_hw->timerawl + delay_us;
+
+    // Write the lower 32 bits of the target time to the alarm which
+    // will arm it
+    timer_hw->alarm[0] = (uint32_t) target;
+}
+
+/**
+*	@name alarm_irq
+*   @type static void interrupt handler
+*/
+void alarm_irq(void) {
+    // Clear the alarm irq
+    hw_clear_bits(&timer_hw->intr, 1u << 0);
+    // Code
+    SAPMS_t SAPMS = 
+    {
+        .eSRC=EWIFI
+    };
+    xQueueSendToBackFromISR(sgqSensorData,&SAPMS,NULL);
 }

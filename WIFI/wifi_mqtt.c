@@ -198,7 +198,6 @@ void mqtt_request_cb(void *arg, err_t err)
   LWIP_PLATFORM_DIAG(("MQTT client \"%s\" request cb: err %d\n", mqtt_client->mqtt_client_info.client_id, (int)err));
 }
 
-
 /* Called when publish is complete either with sucess or failure */
 void mqtt_pub_request_cb(void *arg, err_t result)
 {
