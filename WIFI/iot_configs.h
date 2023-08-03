@@ -7,14 +7,16 @@
 #ifndef _IOT_CONFIG_H_
 #define _IOT_CONFIG_H_
 
-#define MQTTT  (0)
-#define TSPEAK (0)
-#define Azure  (0)
+#define MQTT_TS  (1)
+#define HTTP_TS  (0)
+#define AZ_TS    (0)
 
 // Wifi
+#define IOT_CONFIG_WIFI_SSID "<JJRAZER>"    //Write the Wifi username  
+#define IOT_CONFIG_WIFI_PASSWORD "#JJRZ12345" //Write the Wifi password
 
 //Thinkspeak
-#if(TSPEAK == 1)
+#if(HTTP_TS == 1)
     #define URL_HTTP "https://"
     #define HTTP_URL "api.thingspeak.com"
     #define HTTP_OPT "GET "
@@ -23,7 +25,7 @@
     #define HTTP_FIELD "&field1="
 #endif 
 
-#if(Azure == 1)
+#if(AZ_TS == 1)
     #define IOT_CONFIG_IOTHUB_FQDN  "<HUB-Name>"        //!< IoTHub Name 
     #define IOT_CONFIG_DPS_ID_SCOPE "<Scope-ID>"   //!< Scope ID
     #define IOT_CONFIG_DEVICE_ID    "<DEV-ID>"         //APMIOT_002" //!< Device ID
@@ -31,7 +33,7 @@
     #define ENDPOINT ""
 #endif
 
-#if(MQTTT == 1)
+#if(MQTT_TS == 1)
     #define ENDPOINT   "<URL>"     //!< URL 
     #define IOT_CLIENT "<Client>"  //!< Client ID
     #define IOT_USER   "<USD>"     //!< User ID
