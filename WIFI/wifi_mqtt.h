@@ -11,12 +11,31 @@
 * Includes
 *******************************************************************************/
 #include "common.h"
-//#include "pico/cyw43_arch.h"
+#include "iot_configs.h"
+#include "pico/cyw43_arch.h"
+#include "lwip/dns.h"
+#include "lwip/apps/mqtt.h"
+#include "lwip/apps/mqtt_opts.h"
+#include "lwip/apps/mqtt_priv.h"
+
 /*******************************************************************************
-* Type definitions
+* Macro definitions
 *******************************************************************************/
 #define SSID_WIFI IOT_CONFIG_WIFI_SSID
 #define PSWD_WIFI IOT_CONFIG_WIFI_PASSWORD
+
+/*******************************************************************************
+* Type definitions
+*******************************************************************************/
+
+typedef struct mqtt_data_client {
+    mqtt_client_t *mqtt_client_inst;
+    struct mqtt_connect_client_info_t mqtt_client_info;
+    uint8_t data[MQTT_OUTPUT_RINGBUF_SIZE];
+    uint8_t topic[100];
+    uint32_t len;
+} mqtt_data_client_t;
+
 /*******************************************************************************
 * Function Prototypes
 *******************************************************************************/

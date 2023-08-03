@@ -28,9 +28,9 @@
 //#undef TCP_WND
 //#define TCP_WND  16384
 
-#define LWIP_ALTCP               0
-#define LWIP_ALTCP_TLS           0
-#define LWIP_ALTCP_TLS_MBEDTLS   0
+//#define LWIP_ALTCP               0
+//#define LWIP_ALTCP_TLS           0
+//#define LWIP_ALTCP_TLS_MBEDTLS   0
 
 //#define LWIP_DEBUG 1
 //#define ALTCP_MBEDTLS_DEBUG  LWIP_DBG_ON
@@ -78,6 +78,9 @@
 #define LWIP_NETIF_TX_SINGLE_PBUF   1
 #define DHCP_DOES_ARP_CHECK         0
 #define LWIP_DHCP_DOES_ACD_CHECK    0
+
+//#define 	LWIP_NUM_SYS_TIMEOUT_INTERNAL   (LWIP_TCP + IP_REASSEMBLY + LWIP_ARP + (2*LWIP_DHCP) + LWIP_AUTOIP + LWIP_IGMP + LWIP_DNS + PPP_NUM_TIMEOUTS + (LWIP_IPV6 * (1 + LWIP_IPV6_REASS + LWIP_IPV6_MLD)))
+#define MEMP_NUM_SYS_TIMEOUT   LWIP_NUM_SYS_TIMEOUT_INTERNAL+4
 
 #ifndef NDEBUG
 #define LWIP_DEBUG                  1
