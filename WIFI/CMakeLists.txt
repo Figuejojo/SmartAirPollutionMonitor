@@ -14,11 +14,11 @@ target_link_libraries(WIFI PUBLIC
     #FreeRTOS-Kernel-Heap4
     pico_stdlib 
     freertos  
-    az_core
-    az_iot_provisioning
-    az_noplatform
-    pico_lwip_mbedtls
+    #az_core
+    #az_iot_provisioning
+    #az_noplatform
     pico_lwip_mqtt
+    pico_lwip_mbedtls
     pico_mbedtls
 )
 
