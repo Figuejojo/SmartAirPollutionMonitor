@@ -30,7 +30,7 @@
 //MQTT - LWIP
 static ip_addr_t dnsRespIP;
 static ip_addr_t IPBackup; 
-static mqtt_client_t sgMQTT_client;
+static mqtt_client_t * sgMQTT_client;
 
 /*******************************************************************************
 * Static Function Declarations
@@ -66,71 +66,20 @@ void vTaskWireless(void * pvParameters)
     }
 }
 
-void svMQTTConnect()
-{
-    // Get the MQTT client id used for the MQTT connection.
-
-    struct mqtt_connect_client_info_t ci = {0};
-    //ci.client_id = mqtt_client_id_buffer;
-    //ci.client_pass = mqttPwd_buf;
-    //ci.client_user = mqtt_client_username_buffer;
-    //ci.keep_alive = 240;
-    Print_debug("MQTT_Client_Connect");
-    ip_addr_t temp = IPBackup;
-    printf("Ip: %s\n",ipaddr_ntoa(&temp));
-    vTaskDelay(100);
-    err_t err = mqtt_client_connect(&sgMQTT_client, &IPBackup, LWIP_IANA_PORT_SECURE_MQTT, mqtt_connection_cb, 0, &ci);
-}
-
-static void mqtt_connection_cb(mqtt_client_t *client, void *arg, mqtt_connection_status_t status)
-{
-    if(status == MQTT_CONNECT_ACCEPTED)
-    {
-       Print_debug("mqtt_connection_cb: Successfully connected");
-    }
-    else
-    {
-        Print_debug("mqtt_connection_cb: Disconnected, reason:");
-    }
-
-}
-
-static void mqtt_sub_request_cb(void *arg, err_t result)
-{
-  /* Just print the result code here for simplicity, 
-     normal behaviour would be to take some action if subscribe fails like 
-     notifying user, retry subscribe or disconnect from server */
-  printf("Subscribe result: %d\n", result);
-}
-
-static void dns_found(const char *name, const ip_addr_t *addr, void *arg)
-{
-  LWIP_UNUSED_ARG(arg);
-  IPBackup = *addr;
-  printf("%s: %s\n", name, addr ? ipaddr_ntoa(addr) : "<not found>");
-}
-
-static void dns_dorequest(void *arg)
-{
-  const char* dnsname = ENDPOINT;
-  LWIP_UNUSED_ARG(arg);
-
-  if (dns_gethostbyname(dnsname, &dnsRespIP, dns_found, NULL) == ERR_OK) 
-  {
-    dns_found(dnsname, &dnsRespIP, NULL);
-  }
-}
-
 /**
 *	@name vSetupWifi
 *   @type function
 */
-
 ERR_t vSetupWifi(void)
 {
+    sgMQTT_client = mqtt_client_new();
     return NO_ERROR;
 }
 
+/**
+*	@name svConnect
+*   @type static function
+*/
 void svConnect()
 {
     if (cyw43_arch_init()) 
@@ -151,6 +100,34 @@ void svConnect()
         printf("Connected.\n");
         dns_dorequest(NULL);
         cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, true);
-
     }
+}
+
+/****************************************************************************
+ *                              DNS IP from name
+*****************************************************************************/
+static void dns_found(const char *name, const ip_addr_t *addr, void *arg)
+{
+  LWIP_UNUSED_ARG(arg);
+  IPBackup = *addr;
+  printf("%s: %s\n", name, addr ? ipaddr_ntoa(addr) : "<not found>");
+}
+
+static void dns_dorequest(void *arg)
+{
+  const char* dnsname = ENDPOINT;
+  LWIP_UNUSED_ARG(arg);
+
+  if (dns_gethostbyname(dnsname, &dnsRespIP, dns_found, NULL) == ERR_OK) 
+  {
+    dns_found(dnsname, &dnsRespIP, NULL);
+  }
+}
+
+/****************************************************************************
+*	                                    MQTT 
+*****************************************************************************/
+void svMQTTConnect()
+{
+
 }
