@@ -194,6 +194,6 @@ void tcp_setup(void)
     tcp_sent(testpcb, NULL);
 
     /* now connect */
-    //tcp_connect(testpcb, &ip, 80, connectCallback);
+    tcp_connect(testpcb, &ip, 80, connectCallback);
     
 }
