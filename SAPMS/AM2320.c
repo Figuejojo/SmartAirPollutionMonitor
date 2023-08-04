@@ -43,12 +43,14 @@ void vTask_AM2320(void * pvParameters)
     {
         uint8_t cbuff[8] = {0};
         state = PICO_OK;
+        taskENTER_CRITICAL();
         // Wake-up device
         i2c_write_blocking(AM_I2C,AM_ADR,&wakeCmd,1,false);
         // Read four registers starting from zero.
         state |= i2c_write_blocking(AM_I2C,AM_ADR,readCmd,3,false);
         // Get readings. 
         state |= i2c_read_blocking(AM_I2C,AM_ADR,cbuff,8,false);
+        taskEXIT_CRITICAL();
 
         if(PICO_OK <= state)
         {
@@ -60,7 +62,6 @@ void vTask_AM2320(void * pvParameters)
                 vCollectData(&sAMS,EAM);
             }
         }
-        
         vTaskDelay(AM_CYCLE_T/portTICK_PERIOD_MS);
     }
 }

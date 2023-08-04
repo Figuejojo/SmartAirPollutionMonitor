@@ -1,7 +1,7 @@
 /** @file wifimqtt.h
  *  @brief Header file for the WIFI and MQTT. 
  *
- *  @authors Y3913624 
+ *  @authors Jose Jorge Figueroa Figueroa 
  */
 
 #ifndef _WIFI_MQTT_H_

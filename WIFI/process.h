@@ -19,6 +19,11 @@
 *******************************************************************************/
 #define PROC_QUEUE_SZ (10)    /*!< SensorData Queue Element size */
 
+//0,540,000,000
+//4,294,967,295
+//0,060,000,000
+
+#define TIME2WIFI (60000000)/*!< Time to send wifi [us] - 60000000 is 1 min */ 
 /*******************************************************************************
 * Type definitions
 *******************************************************************************/
@@ -50,7 +55,6 @@ typedef struct SAPMS
 {
 /*@{*/
     SAPMS_e eSRC;   /*!< Enum for collecting incomming Queue values */
-
     /** @name  SAPMS.sPM */
     struct
     {

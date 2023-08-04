@@ -142,9 +142,11 @@ E_ENS_STATES eCheckEnsID(void)
     uint8_t cBuff[2] = {0};
     int state = PICO_OK;
 
+    taskENTER_CRITICAL();
     // Request Sensor ID
     state |= i2c_write_blocking(ENS_I2C, ENS_I2C_ADDR, &IDcmd, 1, true);
     state |= i2c_read_blocking(ENS_I2C, ENS_I2C_ADDR, cBuff, 2, false); 
+    taskEXIT_CRITICAL();
 
     if(PICO_OK <= state)
     {  
@@ -173,12 +175,13 @@ E_ENS_STATES eCheckEnsST(void)
     uint8_t msg[25];
     int state = PICO_OK;
 
+    taskENTER_CRITICAL();
     //Set the Sensor to normal operation state 
     state |= i2c_write_blocking(ENS_I2C, ENS_I2C_ADDR, OPcmd, 2, false);
-
     state |= i2c_write_blocking(ENS_I2C, ENS_I2C_ADDR, OPcmd, 1, true);
     state |= i2c_read_blocking(ENS_I2C, ENS_I2C_ADDR, cBuff, 1, false);
-    
+    taskEXIT_CRITICAL();
+
     // Check for any error on the I2C bus
     if(0 > state)   
     {
@@ -191,9 +194,11 @@ E_ENS_STATES eCheckEnsST(void)
         return EENS_CHECK_ST;
     }
 
+    taskENTER_CRITICAL();
     // Request the ENS status 
     state |= i2c_write_blocking(ENS_I2C, ENS_I2C_ADDR, &DScmd, 1, true);    
     state |= i2c_read_blocking(ENS_I2C, ENS_I2C_ADDR, cBuff, 1, false);
+    taskEXIT_CRITICAL();
 
     // Check for any error on the I2C bus
     if(0 > state)   
@@ -221,6 +226,7 @@ E_ENS_STATES eGetEnsVal(SAPMS_t * pSAPMS)
     uint8_t cBuff[2] = {0};
     int state = PICO_OK;
 
+    taskENTER_CRITICAL();
     // Get CO2
     state = i2c_write_blocking(ENS_I2C, ENS_I2C_ADDR, &cmdCO2, 1, true);
     state|= i2c_read_blocking(ENS_I2C, ENS_I2C_ADDR, cBuff, 2, false);
@@ -230,6 +236,7 @@ E_ENS_STATES eGetEnsVal(SAPMS_t * pSAPMS)
     state = i2c_write_blocking(ENS_I2C, ENS_I2C_ADDR, &cmdTVOC, 1, true);
     state|= i2c_read_blocking(ENS_I2C, ENS_I2C_ADDR, cBuff, 2, false);
     pSAPMS->sENS.fTVOC = (0<=state) ? (cBuff[0]|(cBuff[1]<<8u)) : (-1);
+    taskEXIT_CRITICAL();
 
     if(PICO_OK > state)
     {

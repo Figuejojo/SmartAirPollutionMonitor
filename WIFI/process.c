@@ -8,7 +8,7 @@
 * Includes
 *******************************************************************************/
 #include "process.h"
-
+#include "iot_configs.h"
 /*******************************************************************************
 * Static and/or Global Variables
 *******************************************************************************/
@@ -31,10 +31,10 @@ void vTaskProcess(void * pvParameters)
 {
     SAPMS_t xQdata = {0};
     SAPMS_t cacheData = {0};
-    uint8_t msg[30] = {0};
-    uint8_t JSON[500];
-    //alarm_in_us(180000000); //5min
-    alarm_in_us(5000000); //5sec
+    uint8_t msg[200] = {0};
+    uint8_t minutes = 0;
+    //uint8_t JSON[500];
+    alarm_in_us(TIME2WIFI); 
     while(1)
     {
         xQueueReceive(sgqSensorData,&xQdata,portMAX_DELAY);
@@ -60,8 +60,49 @@ void vTaskProcess(void * pvParameters)
                 break;
 
             case EWIFI:
-                sprintf(msg,"Data to WIFI");
-                alarm_in_us(5000000); //5sec
+                minutes++; 
+                alarm_in_us(TIME2WIFI);
+                if(minutes < 5)
+                {
+                    break;
+                }
+                minutes = 0;
+#if MQTT_TS
+                if(0 != cacheData.sAM.fHum)
+                {
+                    sprintf(msg,"field1=%0.2f&field2=%0.2f",cacheData.sAM.fTemp,cacheData.sAM.fHum);
+                    cacheData.sAM.fTemp = 0;
+                    cacheData.sAM.fHum = 0;
+                }
+                if(0 != cacheData.sPM.fPM1)
+                {
+                    if(msg[0] == 'f')
+                    {
+                        sprintf(msg,"%s&field3=%0.2f&field4=%0.2f&field5=%0.2f",msg,cacheData.sPM.fPM1,cacheData.sPM.fPM25,cacheData.sPM.fPM10);
+                    }
+                    else
+                    {
+                        sprintf(msg,"field3=%0.2f&field4=%0.2f&field5=%0.2f",cacheData.sPM.fPM1,cacheData.sPM.fPM25,cacheData.sPM.fPM10);
+                    }
+                    cacheData.sPM.fPM1 = 0;
+                    cacheData.sPM.fPM25 = 0;
+                    cacheData.sPM.fPM10 = 0;
+                }
+                if(0 != cacheData.sENS.fCO2)
+                {
+                    if('f' == msg[0])
+                    {
+                        sprintf(msg,"%s&field6=%0.2f&field7=%0.2f",msg, cacheData.sENS.fTVOC,cacheData.sENS.fCO2);
+                    }
+                    else
+                    {
+                        sprintf(msg,"field6=%0.2f&field7=%0.2f",cacheData.sENS.fTVOC,cacheData.sENS.fCO2);
+                    }
+                    cacheData.sENS.fCO2 = 0;
+                    cacheData.sENS.fTVOC = 0;
+                }
+
+#endif
 #if 0
                 /** @todo:  do this whenever, the timer has finisehd and has info from all sensors.**/
                 //JSON formatter:
@@ -85,6 +126,7 @@ void vTaskProcess(void * pvParameters)
                 break;
         }
         Print_debug(msg);
+        memset(msg,0,strlen(msg));
     }
 }
 
