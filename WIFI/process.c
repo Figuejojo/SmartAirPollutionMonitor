@@ -9,6 +9,7 @@
 *******************************************************************************/
 #include "process.h"
 #include "iot_configs.h"
+#include "wifi_mqtt.h"
 /*******************************************************************************
 * Static and/or Global Variables
 *******************************************************************************/
@@ -101,7 +102,7 @@ void vTaskProcess(void * pvParameters)
                     cacheData.sENS.fCO2 = 0;
                     cacheData.sENS.fTVOC = 0;
                 }
-
+                publish(msg);
 #endif
 #if 0
                 /** @todo:  do this whenever, the timer has finisehd and has info from all sensors.**/

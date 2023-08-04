@@ -32,6 +32,7 @@ static mqtt_data_client_t mqtt;
 static void svConnect();
 static void svMQTTConnect();
 static void dns_dorequest(void *arg);
+
 //MQTT Specifics
 static void mqtt_connection_cb(mqtt_client_t *client, void *arg, mqtt_connection_status_t status);
 static void mqtt_incoming_publish_cb(void *arg, const char *topic, u32_t tot_len);
@@ -40,7 +41,6 @@ static void mqtt_pub_request_cb(void *arg, err_t result);
 static void mqtt_connection_cb(mqtt_client_t *client, void *arg, mqtt_connection_status_t status);
 static void mqtt_request_cb(void *arg, err_t err);
 static void mqtt_pub_request_cb(void *arg, err_t result);
-static err_t publish(mqtt_client_t *client, void *arg);
 
 /*******************************************************************************
 * Static Function Definitions
@@ -51,24 +51,24 @@ static err_t publish(mqtt_client_t *client, void *arg);
 */
 void vTaskWireless(void * pvParameters)
 {
-    svConnect();
-    vTaskDelay(10000/portTICK_PERIOD_MS);
-    svMQTTConnect();
+  svConnect();
+  vTaskDelay(10000/portTICK_PERIOD_MS);
+  svMQTTConnect();
 
-    int counter = 0;
-    while(1)
+  int counter = 0;
+  while(1)
+  {
+    if(0 > cyw43_wifi_link_status(&cyw43_state, CYW43_ITF_STA))
     {
-        if(0 > cyw43_wifi_link_status(&cyw43_state, CYW43_ITF_STA))
-        {
-            cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, false);
-            printf("Disconnected\n"); 
-        }
-        else
-        {
-            publish(mqtt.mqtt_client_inst, &mqtt);
-        }
-        vTaskDelay(10000/portTICK_PERIOD_MS);
+      cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, false);
+      printf("Disconnected\n"); 
     }
+    else
+    {
+      //If something is needed to do while connected
+    }
+    vTaskDelay(10000/portTICK_PERIOD_MS);
+  }
 }
 
 /**
@@ -86,25 +86,25 @@ ERR_t vSetupWifi(void)
 */
 void svConnect()
 {
-    if (cyw43_arch_init()) 
-    {
-        cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, false);
-        printf("failed to initialise\n");
-    }
-    cyw43_arch_enable_sta_mode();
+  if (cyw43_arch_init()) 
+  {
+    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, false);
+    printf("failed to initialise\n");
+  }
+  cyw43_arch_enable_sta_mode();
 
-    printf("Connecting to Wi-Fi...\n");
-    if (cyw43_arch_wifi_connect_timeout_ms(SSID_WIFI, PSWD_WIFI, CYW43_AUTH_WPA2_AES_PSK, 30000)) 
-    {
-        cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, false);
-        printf("failed to connect.\n");
-    } 
-    else 
-    {
-        printf("Connected.\n");
-        dns_dorequest(NULL);
-        cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, true);
-    }
+  printf("Connecting to Wi-Fi...\n");
+  if (cyw43_arch_wifi_connect_timeout_ms(SSID_WIFI, PSWD_WIFI, CYW43_AUTH_WPA2_AES_PSK, 30000)) 
+  {
+    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, false);
+    printf("failed to connect.\n");
+  } 
+  else 
+  {
+    printf("Connected.\n");
+    dns_dorequest(NULL);
+    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, true);
+  }
 }
 
 /****************************************************************************
@@ -133,26 +133,26 @@ void dns_dorequest(void *arg)
 *****************************************************************************/
 void svMQTTConnect()
 {
-    mqtt.mqtt_client_inst = mqtt_client_new();
-    mqtt.mqtt_client_info.client_id = IOT_CLIENT;
-    mqtt.mqtt_client_info.client_user = IOT_USER;
-    mqtt.mqtt_client_info.client_pass = IOT_PWD;
-    mqtt.mqtt_client_info.keep_alive = 50;
-    mqtt.mqtt_client_info.will_topic = NULL;
-    mqtt.mqtt_client_info.will_msg = NULL;
-    mqtt.mqtt_client_info.will_qos = 0;
-    mqtt.mqtt_client_info.will_retain = 0;   
-    #if LWIP_ALTCP && LWIP_ALTCP_TLS
-    mqtt.mqtt_client_info.tls_config = NULL;
-    #endif
+  mqtt.mqtt_client_inst = mqtt_client_new();
+  mqtt.mqtt_client_info.client_id = IOT_CLIENT;
+  mqtt.mqtt_client_info.client_user = IOT_USER;
+  mqtt.mqtt_client_info.client_pass = IOT_PWD;
+  mqtt.mqtt_client_info.keep_alive = 50;
+  mqtt.mqtt_client_info.will_topic = NULL;
+  mqtt.mqtt_client_info.will_msg = NULL;
+  mqtt.mqtt_client_info.will_qos = 0;
+  mqtt.mqtt_client_info.will_retain = 0;   
+  #if LWIP_ALTCP && LWIP_ALTCP_TLS
+  mqtt.mqtt_client_info.tls_config = NULL;
+  #endif
 
-    mqtt_set_inpub_callback(mqtt.mqtt_client_inst, mqtt_incoming_publish_cb, mqtt_incoming_data_cb, &mqtt);
+  mqtt_set_inpub_callback(mqtt.mqtt_client_inst, mqtt_incoming_publish_cb, mqtt_incoming_data_cb, &mqtt);
 
-    err_t err = mqtt_client_connect(mqtt.mqtt_client_inst, &IPBackup, 1883, &mqtt_connection_cb, &mqtt, &mqtt.mqtt_client_info);
-    if(err != ERR_OK)
-    {
-        printf("connect error\n");
-    }
+  err_t err = mqtt_client_connect(mqtt.mqtt_client_inst, &IPBackup, 1883, &mqtt_connection_cb, &mqtt, &mqtt.mqtt_client_info);
+  if(err != ERR_OK)
+  {
+    printf("connect error\n");
+  }
 }
 
 void mqtt_incoming_publish_cb(void *arg, const char *topic, u32_t tot_len) 
@@ -206,11 +206,10 @@ void mqtt_pub_request_cb(void *arg, err_t result)
   }
 }
 
-err_t publish(mqtt_client_t *client, void *arg)
+err_t publish(char pub_payload[])
 {
-  char pub_payload[50] = {0};
-  static uint8_t temp = 20;
-  sprintf(pub_payload,"field1=%d",temp);
+  void * arg = &mqtt;
+  mqtt_client_t * client = mqtt.mqtt_client_inst;
   err_t err;
   u8_t qos = 0; /* 0 1 or 2, see MQTT specification */
   u8_t retain = 0; /* No don't retain such crappy payload... */

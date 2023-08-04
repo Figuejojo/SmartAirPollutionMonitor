@@ -57,4 +57,6 @@ ERR_t vSetupWifi(void);
 */
 void vTaskWireless(void * pvParameters);
 
+err_t publish(char pub_payload[]);
+
 #endif  //_WIFI_MQTT_H_
