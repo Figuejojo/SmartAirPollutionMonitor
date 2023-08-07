@@ -68,7 +68,7 @@ void vTaskProcess(void * pvParameters)
                     break;
                 }
                 minutes = 0;
-#if MQTT_TS
+#if (MQTT_TS==1)
                 if(0 != cacheData.sAM.fHum)
                 {
                     sprintf(msg,"field1=%0.2f&field2=%0.2f",cacheData.sAM.fTemp,cacheData.sAM.fHum);

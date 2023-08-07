@@ -26,6 +26,7 @@ static ip_addr_t dnsRespIP;
 static ip_addr_t IPBackup; 
 static mqtt_data_client_t mqtt;
 
+volatile static bool MQTT_Flag = false;
 /*******************************************************************************
 * Static Function Declarations
 *******************************************************************************/
@@ -54,7 +55,7 @@ void vTaskWireless(void * pvParameters)
   svConnect();
   vTaskDelay(10000/portTICK_PERIOD_MS);
   svMQTTConnect();
-
+  vTaskDelay(20000/portTICK_PERIOD_MS);
   int counter = 0;
   while(1)
   {
@@ -65,9 +66,13 @@ void vTaskWireless(void * pvParameters)
     }
     else
     {
+      if(false == MQTT_Flag)
+      {
+        svMQTTConnect();
+      }
       //If something is needed to do while connected
     }
-    vTaskDelay(10000/portTICK_PERIOD_MS);
+    vTaskDelay(30000/portTICK_PERIOD_MS);
   }
 }
 
@@ -148,6 +153,7 @@ void svMQTTConnect()
 
   mqtt_set_inpub_callback(mqtt.mqtt_client_inst, mqtt_incoming_publish_cb, mqtt_incoming_data_cb, &mqtt);
 
+  printf("MQTT Connection... \n");
   err_t err = mqtt_client_connect(mqtt.mqtt_client_inst, &IPBackup, 1883, &mqtt_connection_cb, &mqtt, &mqtt.mqtt_client_info);
   if(err != ERR_OK)
   {
@@ -186,36 +192,57 @@ void mqtt_connection_cb(mqtt_client_t *client, void *arg, mqtt_connection_status
 
   if (status == MQTT_CONNECT_ACCEPTED)
   {
-    printf("MQTT_CONNECT_ACCEPTED\n");
-    mqtt_sub_unsub(client,IOT_TOPIC, 0,mqtt_request_cb, arg,1);
-        
+    Print_debug("MQTT Connection accepted\n");
+    printf("Substribing to %s",IOT_TOPIC);
+    mqtt_sub_unsub(client,IOT_TOPIC, 0,mqtt_request_cb, arg,1);    
+  }
+  else
+  {
+    Print_debug("Connection lost");
+    MQTT_Flag = false;
   }
 }
 
 void mqtt_request_cb(void *arg, err_t err)
 {
   mqtt_data_client_t* mqtt_client = ( mqtt_data_client_t*)arg;
-  LWIP_PLATFORM_DIAG(("MQTT client \"%s\" request cb: err %d\n", mqtt_client->mqtt_client_info.client_id, (int)err));
+  LWIP_PLATFORM_DIAG(("MQTT client_sub \"%s\" request cb: err %d\n", mqtt_client->mqtt_client_info.client_id, (int)err));
+  if(0 == err)
+  {
+    Print_debug("Subscribed\n");
+    MQTT_Flag = true;
+  }
 }
 
 /* Called when publish is complete either with sucess or failure */
 void mqtt_pub_request_cb(void *arg, err_t result)
 {
-  if(result != ERR_OK) {
+  if(result != ERR_OK) 
+  {
     printf("Publish result: %d\n", result);
   }
 }
 
 err_t publish(char pub_payload[])
 {
-  void * arg = &mqtt;
-  mqtt_client_t * client = mqtt.mqtt_client_inst;
-  err_t err;
-  u8_t qos = 0; /* 0 1 or 2, see MQTT specification */
-  u8_t retain = 0; /* No don't retain such crappy payload... */
-  err = mqtt_publish(client, IOT_TOPIC, pub_payload, strlen(pub_payload), qos, retain, mqtt_pub_request_cb, arg);
-  if(err != ERR_OK) {
-    printf("Publish err: %d\n", err);
+  err_t err = ERR_CONN;
+  if(true == MQTT_Flag)
+  {
+    void * arg = &mqtt;
+    mqtt_client_t * client = mqtt.mqtt_client_inst;
+    err_t err;
+    u8_t qos = 0; /* 0 1 or 2, see MQTT specification */
+    u8_t retain = 0; /* No don't retain such crappy payload... */
+    err = mqtt_publish(client, IOT_TOPIC, pub_payload, strlen(pub_payload), qos, retain, mqtt_pub_request_cb, arg);
+    if(err != ERR_OK) 
+    {
+      printf("Publish err: %d\n", err);
+      MQTT_Flag = false;  // Seccond redundant system for mqtt connection
+    }
+  }
+  else
+  {
+    Print_debug("MQTT not connected");
   }
   return err;
 }

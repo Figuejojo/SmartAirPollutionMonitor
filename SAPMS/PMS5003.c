@@ -63,7 +63,7 @@ void vTaskPMS5003(void * pvParameters)
         }
         else
         {
-            Print_debug("NoPMS\n");
+            Print_debug("NoPMS");
             //If the message had some issue
         }
     }
