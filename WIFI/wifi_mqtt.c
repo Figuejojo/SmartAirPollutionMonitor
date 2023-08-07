@@ -57,6 +57,15 @@ void vTaskWireless(void * pvParameters)
   svMQTTConnect();
   vTaskDelay(20000/portTICK_PERIOD_MS);
   int counter = 0;
+
+  if(watchdog_caused_reboot())
+  {
+      printf("Reboot cause by watchdog - Check Wifi settings and connection");
+  }
+
+#if WATCHDOG_ON==1
+  watchdog_enable(8000,1);
+#endif
   while(1)
   {
     if(0 > cyw43_wifi_link_status(&cyw43_state, CYW43_ITF_STA))
@@ -66,13 +75,15 @@ void vTaskWireless(void * pvParameters)
     }
     else
     {
+#if WATCHDOG_ON==1
+      watchdog_update();
+#endif
       if(false == MQTT_Flag)
       {
         svMQTTConnect();
       }
-      //If something is needed to do while connected
     }
-    vTaskDelay(30000/portTICK_PERIOD_MS);
+    vTaskDelay(3000/portTICK_PERIOD_MS);
   }
 }
 

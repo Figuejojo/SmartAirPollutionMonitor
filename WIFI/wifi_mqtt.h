@@ -17,7 +17,7 @@
 #include "lwip/apps/mqtt.h"
 #include "lwip/apps/mqtt_opts.h"
 #include "lwip/apps/mqtt_priv.h"
-
+#include "hardware/watchdog.h"
 /*******************************************************************************
 * Macro definitions
 *******************************************************************************/
