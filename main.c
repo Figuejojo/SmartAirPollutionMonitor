@@ -100,6 +100,6 @@ void TaskLEDBlinkvoid(void * pvParameters)
         gpio_put(LED_PIN,1);
         vTaskDelay(500/portTICK_PERIOD_MS);
         gpio_put(LED_PIN,0);
-        Print_debug(msg);
+        //Print_debug(msg);
     }
 }

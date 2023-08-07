@@ -34,7 +34,7 @@
 
 #define ENABLE_DEBUG (1)    /*!< On/Off Debug prints */
 
-#define USE_WIRELESS (1)    /*!< On/Off Wireless Task */
+#define USE_WIRELESS (0)    /*!< On/Off Wireless Task */
 
 #define USE_AM2320   (0)    /*!< On/Off AM2320  Task */
 #define USE_ADA746   (0)    /*!< On/Off ADA746  Task */

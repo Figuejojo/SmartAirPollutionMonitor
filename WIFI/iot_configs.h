@@ -7,13 +7,13 @@
 #ifndef _IOT_CONFIG_H_
 #define _IOT_CONFIG_H_
 
-#define MQTT_TS  (1)
+#define MQTT_TS  (0)
 #define HTTP_TS  (0)
 #define AZ_TS    (0)
 
 // Wifi
-#define IOT_CONFIG_WIFI_SSID "<JJRAZER>"    //Write the Wifi username  
-#define IOT_CONFIG_WIFI_PASSWORD "#JJRZ12345" //Write the Wifi password
+#define IOT_CONFIG_WIFI_SSID "<SSID>"    //Write the Wifi username  
+#define IOT_CONFIG_WIFI_PASSWORD "<PWD>" //Write the Wifi password
 
 //Thinkspeak
 #if(HTTP_TS == 1)
@@ -34,11 +34,11 @@
 #endif
 
 #if(MQTT_TS == 1)
-    #define ENDPOINT   "<URL>"     //!< URL 
-    #define IOT_CLIENT "<Client>"  //!< Client ID
-    #define IOT_USER   "<USD>"     //!< User ID
-    #define IOT_PWD    "<PWD>"     //!< Password
-    #define IOT_TOPIC  "<Topic>"   //!< Topic
+    #define ENDPOINT   "mqtt3.thingspeak.com" 
+    #define IOT_CLIENT "<Client ID>"
+    #define IOT_USER   "<User ID(Same as Client ID)>"
+    #define IOT_PWD    "<Password>"
+    #define IOT_TOPIC  "<Topic/Subtopic>"
 #endif 
 
 // Publish 1 message every 2 seconds
