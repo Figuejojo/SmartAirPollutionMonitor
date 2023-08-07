@@ -35,6 +35,7 @@ void vTaskProcess(void * pvParameters)
     uint8_t msg[200] = {0};
     uint8_t minutes = 0;
     //uint8_t JSON[500];
+    uint8_t isSampleTwo[3] = {1,1,1};
     alarm_in_us(TIME2WIFI); 
     while(1)
     {
@@ -42,22 +43,26 @@ void vTaskProcess(void * pvParameters)
         switch (xQdata.eSRC)
         {
             case EPMS:
-                cacheData.sPM.fPM1 =  (cacheData.sPM.fPM1 + xQdata.sPM.fPM1)/2;
-                cacheData.sPM.fPM25 = (cacheData.sPM.fPM25 + xQdata.sPM.fPM25)/2;
-                cacheData.sPM.fPM10 = (cacheData.sPM.fPM10 + xQdata.sPM.fPM10)/2;
+                cacheData.sPM.fPM1 =  (cacheData.sPM.fPM1 + xQdata.sPM.fPM1)/isSampleTwo[EPMS];
+                cacheData.sPM.fPM25 = (cacheData.sPM.fPM25 + xQdata.sPM.fPM25)/isSampleTwo[EPMS];
+                cacheData.sPM.fPM10 = (cacheData.sPM.fPM10 + xQdata.sPM.fPM10)/isSampleTwo[EPMS];
+                isSampleTwo[EPMS] = (isSampleTwo[EPMS]==1) ? 2:isSampleTwo[EPMS];
                 sprintf(msg,"PM1 %0.1f ,PM2.5 %0.1f , PM5 %0.1f",cacheData.sPM.fPM1,cacheData.sPM.fPM25,cacheData.sPM.fPM10);
                 break;
             
             case EENS:
-                cacheData.sENS.fCO2 = (cacheData.sENS.fCO2 + xQdata.sENS.fCO2)/2;
-                cacheData.sENS.fTVOC = (cacheData.sENS.fTVOC + xQdata.sENS.fTVOC)/2;
+                cacheData.sENS.fCO2 = (cacheData.sENS.fCO2 + xQdata.sENS.fCO2)/isSampleTwo[EENS];
+                cacheData.sENS.fTVOC = (cacheData.sENS.fTVOC + xQdata.sENS.fTVOC)/isSampleTwo[EENS];
+                isSampleTwo[EENS] = (isSampleTwo[EENS]==1) ? 2 : isSampleTwo[EENS];
                 sprintf(msg,"CO2 %0.1f ,TVOC %0.1f",cacheData.sENS.fCO2, cacheData.sENS.fTVOC);
                 break;
 
             case EAM:
-                cacheData.sAM.fHum = (cacheData.sAM.fHum + xQdata.sAM.fHum)/2;
-                cacheData.sAM.fTemp = (cacheData.sAM.fTemp + xQdata.sAM.fTemp)/2;
+                cacheData.sAM.fHum = (cacheData.sAM.fHum + xQdata.sAM.fHum)/isSampleTwo[EAM];
+                cacheData.sAM.fTemp = (cacheData.sAM.fTemp + xQdata.sAM.fTemp)/isSampleTwo[EAM];
+                isSampleTwo[EAM] = (isSampleTwo[EAM]==1) ? 2 : isSampleTwo[EAM];
                 sprintf(msg,"Hum %0.1f ,Temp %0.1f",cacheData.sAM.fHum, cacheData.sAM.fTemp);
+
                 break;
 
             case EWIFI:
@@ -72,6 +77,7 @@ void vTaskProcess(void * pvParameters)
                 if(0 != cacheData.sAM.fHum)
                 {
                     sprintf(msg,"field1=%0.2f&field2=%0.2f",cacheData.sAM.fTemp,cacheData.sAM.fHum);
+                    isSampleTwo[EAM] = 1;
                     cacheData.sAM.fTemp = 0;
                     cacheData.sAM.fHum = 0;
                 }
@@ -85,6 +91,7 @@ void vTaskProcess(void * pvParameters)
                     {
                         sprintf(msg,"field3=%0.2f&field4=%0.2f&field5=%0.2f",cacheData.sPM.fPM1,cacheData.sPM.fPM25,cacheData.sPM.fPM10);
                     }
+                    isSampleTwo[EPMS] = 1;
                     cacheData.sPM.fPM1 = 0;
                     cacheData.sPM.fPM25 = 0;
                     cacheData.sPM.fPM10 = 0;
@@ -99,6 +106,7 @@ void vTaskProcess(void * pvParameters)
                     {
                         sprintf(msg,"field6=%0.2f&field7=%0.2f",cacheData.sENS.fTVOC,cacheData.sENS.fCO2);
                     }
+                    isSampleTwo[EENS] = 1;
                     cacheData.sENS.fCO2 = 0;
                     cacheData.sENS.fTVOC = 0;
                 }
