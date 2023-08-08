@@ -33,6 +33,7 @@
 #define IOT_TOPIC  "<Topic/Subtopic>"  
 #define ENDPOINT "jjff500.azure-devices.net"
 
+#define MQTTPORT 8883
 //From thingspeak as placeholder.
 #define IOT_CLIENT "<Client ID>"
 #define IOT_USER   "<User ID(Same as Client ID)>"
@@ -47,7 +48,11 @@
 #define IOT_USER   "<User ID(Same as Client ID)>"
 #define IOT_PWD    "<Password>"
 #define IOT_TOPIC  "<Topic/Subtopic>"
+#define MQTTPORT (1883)
 #endif 
+
+//NTP Service
+#define ENPOINT_NTP "pool.ntp.org"
 
 // Publish 1 message every 2 seconds
 #define TELEMETRY_FREQUENCY_MILLISECS 2000
