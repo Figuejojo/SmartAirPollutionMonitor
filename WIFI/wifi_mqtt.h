@@ -18,6 +18,11 @@
 #include "lwip/apps/mqtt_opts.h"
 #include "lwip/apps/mqtt_priv.h"
 #include "hardware/watchdog.h"
+//For SNTP consults:
+#include <time.h>
+#include "lwip/pbuf.h"
+#include "lwip/udp.h"
+
 /*******************************************************************************
 * Macro definitions
 *******************************************************************************/
@@ -28,13 +33,22 @@
 * Type definitions
 *******************************************************************************/
 
-typedef struct mqtt_data_client {
+typedef struct mqtt_data_client 
+{
     mqtt_client_t *mqtt_client_inst;
     struct mqtt_connect_client_info_t mqtt_client_info;
     uint8_t data[MQTT_OUTPUT_RINGBUF_SIZE];
     uint8_t topic[100];
     uint32_t len;
 } mqtt_data_client_t;
+
+typedef struct ntp
+{
+    ip_addr_t ip;
+    bool isIP;
+    struct udp_pcb *ntp_pcb;
+    absolute_time_t ntp_time;
+}ntp_t;
 
 /*******************************************************************************
 * Function Prototypes

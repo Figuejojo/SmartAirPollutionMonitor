@@ -26,6 +26,9 @@ static mqtt_data_client_t mqtt;
 static ip_addr_t IPdnsMQTT;
 static ip_addr_t IPdnsSNTP; 
 
+static ntp_t * heapNTP;
+time_t epoch = 0;
+
 volatile static bool MQTT_Flag = false;
 /*******************************************************************************
 * Static Function Declarations
@@ -55,9 +58,10 @@ void vTaskWireless(void * pvParameters)
 {
   svConnect();
   vTaskDelay(10000/portTICK_PERIOD_MS);
+  getTimeSNTP();
+  vTaskDelay(1000/portTICK_PERIOD_MS);
   svMQTTConnect();
-  vTaskDelay(20000/portTICK_PERIOD_MS);
-  int counter = 0;
+  vTaskDelay(15000/portTICK_PERIOD_MS);
 
 #if WATCHDOG_ON==1
   if(watchdog_caused_reboot())
@@ -145,9 +149,61 @@ void dns_found(const char *name, const ip_addr_t *addr, void *arg)
 /****************************************************************************
 *	                     SNTP (Simple Network Time Protocol) 
 *****************************************************************************/
+static void ntp_request(ntp_t * NTP)
+{
+    struct pbuf *p = pbuf_alloc(PBUF_TRANSPORT, NTP_MSG_LEN, PBUF_RAM);
+    uint8_t *req = (uint8_t *) p->payload;
+    memset(req, 0, NTP_MSG_LEN);
+    req[0] = 0x1b;
+    udp_sendto(NTP->ntp_pcb, p, &NTP->ip, NTP_PORT);
+    pbuf_free(p);
+}
+
+static void ntp_result(ntp_t* state, int status, time_t *result) {
+    if (status == 0 && result) {
+        struct tm *utc = gmtime(result);
+        printf("GM time ntp response: %02d/%02d/%04d %02d:%02d:%02d\n", utc->tm_mday, utc->tm_mon + 1, utc->tm_year + 1900,
+               utc->tm_hour, utc->tm_min, utc->tm_sec);
+    }
+}
+
+static void ntp_recv(void *arg, struct udp_pcb *pcb, struct pbuf *p, const ip_addr_t *addr, u16_t port)
+{
+    ntp_t *state = (ntp_t*)arg;
+    uint8_t mode = pbuf_get_at(p, 0) & 0x7;
+    uint8_t stratum = pbuf_get_at(p, 1);
+
+    // Check the result
+    if (ip_addr_cmp(addr, &heapNTP->ip) && port == NTP_PORT && p->tot_len == NTP_MSG_LEN &&
+        mode == 0x4 && stratum != 0) {
+        uint8_t seconds_buf[4] = {0};
+        pbuf_copy_partial(p, seconds_buf, sizeof(seconds_buf), 40);
+        uint32_t seconds_since_1900 = seconds_buf[0] << 24 | seconds_buf[1] << 16 | seconds_buf[2] << 8 | seconds_buf[3];
+        uint32_t seconds_since_1970 = seconds_since_1900 - NTP_DELTA;
+        epoch = seconds_since_1970;
+        ntp_result(state, 0, &epoch);
+    } else {
+        printf("invalid ntp response\n");
+        ntp_result(state, -1, NULL);
+    }
+    pbuf_free(p);
+    free(heapNTP);
+    heapNTP = NULL;
+}
+
 uint32_t getTimeSNTP()
 {
-
+  heapNTP = (ntp_t*)calloc(1,sizeof(ntp_t));
+  if(IPdnsSNTP.addr != IPADDR_ANY)
+  {
+    heapNTP->ip = IPdnsSNTP;
+    heapNTP->isIP = true;
+    heapNTP->ntp_pcb = udp_new_ip_type(IPADDR_TYPE_ANY);
+    udp_recv(heapNTP->ntp_pcb, ntp_recv, heapNTP);
+    ntp_request(heapNTP);
+  }
+  vTaskDelay(500);
+  return epoch;
 }
 
 /****************************************************************************
@@ -155,8 +211,6 @@ uint32_t getTimeSNTP()
 *****************************************************************************/
 void svMQTTConnect()
 {
-
-  
   mqtt.mqtt_client_inst = mqtt_client_new();
   mqtt.mqtt_client_info.client_id =   IOT_CLIENT;
   mqtt.mqtt_client_info.client_user = IOT_USER;

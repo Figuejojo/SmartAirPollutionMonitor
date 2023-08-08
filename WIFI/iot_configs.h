@@ -53,6 +53,9 @@
 
 //NTP Service
 #define ENPOINT_NTP "pool.ntp.org"
+#define NTP_MSG_LEN 48
+#define NTP_PORT 123
+#define NTP_DELTA 2208988800
 
 // Publish 1 message every 2 seconds
 #define TELEMETRY_FREQUENCY_MILLISECS 2000
