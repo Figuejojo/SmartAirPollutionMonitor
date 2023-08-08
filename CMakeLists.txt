@@ -55,9 +55,9 @@ target_link_libraries(SAPM PUBLIC
     freertos 
     SAPMS 
     WIFI 
-    #az_core
-    #az_iot_hub
-    #az_noplatform
+    az_core
+    az_iot_hub
+    az_noplatform
     )
 
 # Enable usb output, disable uart output

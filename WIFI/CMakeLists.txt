@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.12)
 set(WIFI_SRCS
     wifi_mqtt.c
     process.c
+    AzureMQTT.c
 )
 
 add_library(WIFI ${WIFI_SRCS})
@@ -14,9 +15,9 @@ target_link_libraries(WIFI PUBLIC
     #FreeRTOS-Kernel-Heap4
     pico_stdlib 
     freertos  
-    #az_core
-    #az_iot_provisioning
-    #az_noplatform
+    az_core
+    az_iot_hub
+    az_noplatform
     pico_lwip_mqtt
     pico_lwip_mbedtls
     pico_mbedtls

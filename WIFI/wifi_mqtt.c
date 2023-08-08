@@ -149,8 +149,10 @@ void dns_dorequest(void *arg)
 *****************************************************************************/
 void svMQTTConnect()
 {
+
+  
   mqtt.mqtt_client_inst = mqtt_client_new();
-  mqtt.mqtt_client_info.client_id = IOT_CLIENT;
+  mqtt.mqtt_client_info.client_id =   IOT_CLIENT;
   mqtt.mqtt_client_info.client_user = IOT_USER;
   mqtt.mqtt_client_info.client_pass = IOT_PWD;
   mqtt.mqtt_client_info.keep_alive = 50;
