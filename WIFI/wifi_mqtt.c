@@ -22,9 +22,9 @@
 * Static Variables Declarations
 *******************************************************************************/
 //MQTT - LWIP
-static ip_addr_t dnsRespIP;
-static ip_addr_t IPBackup; 
 static mqtt_data_client_t mqtt;
+static ip_addr_t IPdnsMQTT;
+static ip_addr_t IPdnsSNTP; 
 
 volatile static bool MQTT_Flag = false;
 /*******************************************************************************
@@ -32,7 +32,8 @@ volatile static bool MQTT_Flag = false;
 *******************************************************************************/
 static void svConnect();
 static void svMQTTConnect();
-static void dns_dorequest(void *arg);
+static void dns_found(const char *name, const ip_addr_t *addr, void *arg);
+static uint32_t getTimeSNTP();
 
 //MQTT Specifics
 static void mqtt_connection_cb(mqtt_client_t *client, void *arg, mqtt_connection_status_t status);
@@ -117,7 +118,8 @@ void svConnect()
   else 
   {
     printf("Connected.\n");
-    dns_dorequest(NULL);
+    dns_gethostbyname(ENPOINT_NTP, &IPdnsSNTP, dns_found, NULL);
+    dns_gethostbyname(ENDPOINT, &IPdnsMQTT, dns_found, NULL);
     cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, true);
   }
 }
@@ -125,22 +127,27 @@ void svConnect()
 /****************************************************************************
  *                              DNS IP from name
 *****************************************************************************/
-static void dns_found(const char *name, const ip_addr_t *addr, void *arg)
+void dns_found(const char *name, const ip_addr_t *addr, void *arg)
 {
   LWIP_UNUSED_ARG(arg);
-  IPBackup = *addr;
-  printf("%s: %s\n", name, addr ? ipaddr_ntoa(addr) : "<not found>");
+  ip_addr_t tempAddr = *addr;
+  printf("%s: %s\n", name, addr ? ipaddr_ntoa(&tempAddr) : "<not found>");
+  if(0 == strcmp(name,ENPOINT_NTP))
+  {
+    IPdnsSNTP = tempAddr;
+  }
+  else
+  {
+    IPdnsMQTT = tempAddr;
+  }
 }
 
-void dns_dorequest(void *arg)
+/****************************************************************************
+*	                     SNTP (Simple Network Time Protocol) 
+*****************************************************************************/
+uint32_t getTimeSNTP()
 {
-  const char* dnsname = ENDPOINT;
-  LWIP_UNUSED_ARG(arg);
 
-  if (dns_gethostbyname(dnsname, &dnsRespIP, dns_found, NULL) == ERR_OK) 
-  {
-    dns_found(dnsname, &dnsRespIP, NULL);
-  }
 }
 
 /****************************************************************************
@@ -166,7 +173,7 @@ void svMQTTConnect()
   mqtt_set_inpub_callback(mqtt.mqtt_client_inst, mqtt_incoming_publish_cb, mqtt_incoming_data_cb, &mqtt);
 
   printf("MQTT Connection... \n");
-  err_t err = mqtt_client_connect(mqtt.mqtt_client_inst, &IPBackup, 1883, &mqtt_connection_cb, &mqtt, &mqtt.mqtt_client_info);
+  err_t err = mqtt_client_connect(mqtt.mqtt_client_inst, &IPdnsMQTT, MQTTPORT, &mqtt_connection_cb, &mqtt, &mqtt.mqtt_client_info);
   if(err != ERR_OK)
   {
     printf("connect error\n");
