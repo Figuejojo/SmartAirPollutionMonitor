@@ -58,12 +58,11 @@ void vTaskWireless(void * pvParameters)
   vTaskDelay(20000/portTICK_PERIOD_MS);
   int counter = 0;
 
+#if WATCHDOG_ON==1
   if(watchdog_caused_reboot())
   {
       printf("Reboot cause by watchdog - Check Wifi settings and connection");
   }
-
-#if WATCHDOG_ON==1
   watchdog_enable(8000,1);
 #endif
   while(1)
