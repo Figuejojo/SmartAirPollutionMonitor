@@ -33,7 +33,7 @@
 #define SAPM_ID     "001"
     
 /*  WIFI Elements  */
-#define USE_WIRELESS (0)    /*!< On/Off Wireless Task. If wireless is on go to WIFI/IoT_conig.h */
+#define USE_WIRELESS (1)    /*!< On/Off Wireless Task. If wireless is on go to WIFI/IoT_conig.h */
 #define WATCHDOG_ON  (0)    /*!< On/Off Watchdog for WIFI */                     
 
 /* Sensor Elements */

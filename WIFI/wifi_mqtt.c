@@ -212,6 +212,9 @@ uint32_t getTimeSNTP()
 void svMQTTConnect()
 {
   mqtt.mqtt_client_inst = mqtt_client_new();
+#if(AZ_TS==1)
+  azure_iot_init(&mqtt.mqtt_client_info);
+#else
   mqtt.mqtt_client_info.client_id =   IOT_CLIENT;
   mqtt.mqtt_client_info.client_user = IOT_USER;
   mqtt.mqtt_client_info.client_pass = IOT_PWD;
@@ -223,6 +226,8 @@ void svMQTTConnect()
   #if LWIP_ALTCP && LWIP_ALTCP_TLS
   mqtt.mqtt_client_info.tls_config = NULL;
   #endif
+#endif
+
 
   mqtt_set_inpub_callback(mqtt.mqtt_client_inst, mqtt_incoming_publish_cb, mqtt_incoming_data_cb, &mqtt);
 
