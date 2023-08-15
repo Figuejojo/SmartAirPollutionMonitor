@@ -8,6 +8,11 @@
 #include "pico/stdlib.h"
 #include "hardware/uart.h"
 #include "hardware/irq.h"
+#include "stdio.h"
+#include "stdbool.h"
+#include "string.h"
+#include "FreeRTOS.h"
+#include "task.h"
 
 /*******************************************************************************
 * Static & Global Variables
@@ -29,10 +34,9 @@ static int chars_rxed = 0;
 volatile char receive_buffer[BUFFER_SIZE];
 volatile uint8_t receive_index = 0;
 volatile bool data_received = false;
-
 void parse_gprmc_data(const char *data);
 void on_uart_rx();
-
+void parse_gpgga_data(const char *data);
 /**
 *	@name vTaskGPS
 *   @type Task
@@ -53,12 +57,19 @@ void vTaskGPS(void * pvParameters)
 
         if (data_received) 
         {
-            Print_debug("Data Recv: ");
+            
             // print received data
+            printf("Data Recv: %s",receive_buffer);
             uart_puts(UART_ID,(const char*)(receive_buffer));
             data_received = false;
-            // parse the received data
+            // Check if the data is GPRMC
+            if(strncmp((const char*)receive_buffer, "$GPRMC", 6) == 0) {
             parse_gprmc_data((const char*)receive_buffer);
+        }
+            // Check if the data is GPGGA
+            else if(strncmp((const char*)receive_buffer, "$GPGGA", 6) == 0) {
+            parse_gpgga_data((const char*)receive_buffer);
+        }
         }
         vTaskDelay(5000/portTICK_PERIOD_MS);
     }
@@ -91,42 +102,22 @@ void GPS_setup(void)
 #endif
 }
 
-
-// Serial receive interrupt
-void on_uart_rx() {
-    while (uart_is_readable(UART_ID)) {
-        char data = uart_getc(UART_ID);
-        
-        // Store the received data into the buffer
-        receive_buffer[receive_index] = data;
-        receive_index++;
-        
-        // Check if a terminator was received (assumed to be '\n')
-        if (data == '\n' || receive_index >= BUFFER_SIZE - 1) {
-            receive_buffer[receive_index] = '\0'; // Null-terminate the string
-            data_received = true;
-            receive_index = 0;
-        }
-    }
-}
-
 // Parse GPRMC data and extract time, date, latitude, longitude and altitude information
 void parse_gprmc_data(const char *data) {
     char time[7];
     char latitude[10];
     char longitude[11];
     char date[7];
-    char altitude[7];
-    char msg[30];
     printf("Data is: %s",data);
     // Check if it is GPRMC data
     if (strncmp(data, "$GPRMC", 6) == 0) {
         // Separate the GPRMC data with commas to extract the required information
         char *token;
         int count = 0;
+        char *saveptr;
         char *data_copy = strdup(data); 
 // Make a copy of the data so as not to destroy the original
-        token = strtok(data_copy, ",");
+        token = strtok_r(data_copy, ",",&saveptr);
         while (token != NULL) 
         {
             if (count == 1) 
@@ -153,14 +144,8 @@ void parse_gprmc_data(const char *data) {
                 strncpy(date, token, 6);
                 date[6] = '\0';
             } 
-            else if (count == 8) 
-            {
-                // altitude information
-                strncpy(altitude, token, 6);
-                altitude[6] = '\0';
-            }
             count++;
-            token = strtok(NULL, ",");
+            token = strtok_r(NULL, ",",&saveptr);
         }
         free(data_copy);
 
@@ -170,5 +155,64 @@ void parse_gprmc_data(const char *data) {
     else
     {
         printf("Invalid GPRMC data.\n");
+    }
+}
+
+// Parse GPGGA data and extract time, date, latitude, longitude and altitude information
+void parse_gpgga_data(const char *data) {
+    char latitude[10];
+    char longitude[11];
+    char altitude[10];
+    
+    // Check if it is GPGGA data
+    if (strncmp(data, "$GPGGA", 6) == 0) {
+        char *token;
+        int count = 0;
+        char *saveptr;
+        char *data_copy = strdup(data);
+
+        token = strtok_r(data_copy, ",",&saveptr);
+        while (token != NULL) {
+            if (count == 2) {
+                // Latitude information (format: ddmm.mmmm)
+                strncpy(latitude, token, 9);
+                latitude[9] = '\0';
+            } else if (count == 4) {
+                // Longitude information (format: dddmm.mmmm)
+                strncpy(longitude, token, 10);
+                longitude[10] = '\0';
+            } else if (count == 9) {
+                // Altitude information
+                strncpy(altitude, token, 9);
+                altitude[9] = '\0';
+            }
+            count++;
+            token = strtok_r(NULL, ",",&saveptr);
+        }
+        free(data_copy);
+        
+        printf("Lat: %s, Long: %s, Alt: %s meters above sea level\n", latitude, longitude, altitude);
+    } else {
+        printf("Invalid GPGGA data.\n");
+    }
+}
+
+// uart_rx function to handle overflow
+void on_uart_rx() {
+    while (uart_is_readable(UART_ID)) {
+        char data = uart_getc(UART_ID);
+        
+        if (receive_index < BUFFER_SIZE - 1) {  // Added this check to prevent buffer overflow
+            // Store the received data into the buffer
+            receive_buffer[receive_index] = data;
+            receive_index++;
+        }
+        
+        // Check if a terminator was received (assumed to be '\n')
+        if (data == '\n' || receive_index >= BUFFER_SIZE - 1) {
+            receive_buffer[receive_index] = '\0'; // Null-terminate the string
+            data_received = true;
+            receive_index = 0;
+        }
     }
 }
