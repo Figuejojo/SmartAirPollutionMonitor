@@ -110,6 +110,8 @@ void vTaskProcess(void * pvParameters)
                     cacheData.sENS.fCO2 = 0;
                     cacheData.sENS.fTVOC = 0;
                 }
+                //53.94970313639218, -1.0516810887758052
+                sprintf(msg,"%s&lat=53.94970313639218&long=-1.0516810887758052",msg);
                 publish(msg);
 #endif
 #if 0
