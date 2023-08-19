@@ -1,11 +1,8 @@
 /** @file Main.c
  *  @brief This is the main file of the Smart Air Pollution Monitor.
  *
- *  @author Y3913624
+ *  @author Jose Jorge Figueroa Figueroa
  */
-
-/** @todo: assigned task priorities. */ 
-
 /*******************************************************************************
 * Includes
 *******************************************************************************/
@@ -46,37 +43,39 @@ int main()
     //*** Queues Creation and setup  
     debug_queue_setup();
     GPS_setup();
+    vSetupAM2320();
     vSetupPMS5003();
-    setupSEN0515();
-    vSetupWifi();
+    vSetupSEN0515();
     vSetupProcess();
+    vSetupWifi();
+
     
     /*****************
     * FreeRTOS tASKS *
     ******************/
 
    //These tasks are always created.
-    xTaskCreate(TaskLEDBlinkvoid,"Ledblink",256,NULL,1,NULL);
-    xTaskCreate(vTaskProcess,"DataProcess",256,NULL,1,NULL);
+    xTaskCreate(TaskLEDBlinkvoid,"Ledblink",256,NULL,2,NULL);
+    xTaskCreate(vTaskProcess,"DataProcess",256,NULL,2,NULL);
 
     // These tasks can be turn on/off by using the macros on common.h file.
 #if USE_WIRELESS == 1
     xTaskCreate(vTaskWireless,"Wireless",256,NULL,1,NULL);
 #endif
 #if USE_ADA746 == 1
-    xTaskCreate(vTaskGPS,"GPSTask",256,NULL,1,NULL);
+    xTaskCreate(vTaskGPS,"GPSTask",256,NULL,2,NULL);
 #endif
 #if USE_AM2320 == 1
-    xTaskCreate(vTask_AM2320,"TempAndHumd",256,NULL,1,NULL);
+    xTaskCreate(vTask_AM2320,"TempAndHumd",256,NULL,2,NULL);
 #endif
 #if USE_PMS5003 == 1
-    xTaskCreate(vTaskPMS5003,"PM2and10um",256,NULL,1,NULL);
+    xTaskCreate(vTaskPMS5003,"PM2and10um",256,NULL,2,NULL);
 #endif
 #if USE_SEN0515 == 1
-    xTaskCreate(vTaskSEN0515,"TVOC&CO2",256,NULL,1,NULL);
+    xTaskCreate(vTaskSEN0515,"TVOC&CO2",256,NULL,2,NULL);
 #endif
 #if ENABLE_DEBUG // Only if the debug flag is set.
-    xTaskCreate(TaskDebugPrint, "DebugUSBPrint", 256, NULL, 1, NULL);
+    xTaskCreate(TaskDebugPrint, "DebugUSBPrint", 256, NULL, 2, NULL);
 #endif
 
     //Start FreeRTOS
@@ -101,6 +100,6 @@ void TaskLEDBlinkvoid(void * pvParameters)
         gpio_put(LED_PIN,1);
         vTaskDelay(500/portTICK_PERIOD_MS);
         gpio_put(LED_PIN,0);
-        Print_debug(msg);
+        //Print_debug(msg);
     }
 }

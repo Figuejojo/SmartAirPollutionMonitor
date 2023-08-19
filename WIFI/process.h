@@ -11,12 +11,19 @@
 * Includes
 *******************************************************************************/
 #include "common.h"
+#include "hardware/timer.h"
+#include "hardware/irq.h"
 
 /*******************************************************************************
 * Macro Definitions
 *******************************************************************************/
 #define PROC_QUEUE_SZ (10)    /*!< SensorData Queue Element size */
 
+//0,540,000,000
+//4,294,967,295
+//0,060,000,000
+
+#define TIME2WIFI (60000000)/*!< Time to send wifi [us] - 60000000 is 1 min */ 
 /*******************************************************************************
 * Type definitions
 *******************************************************************************/
@@ -33,9 +40,9 @@ typedef enum
     EPMS = 0,           /*!< PMS sensor data enum */
     EENS,               /*!< SEN0515/ENS160 sensor data */
     EAM,                /*!< AM2320 sensor data */
-    EGPS,               /*!< GOS sensor data */
-    //ESAPM,      //SAPM 
-    SAPMS_END,          /*!< GOS sensor data */
+    EGPS,               /*!< GPS sensor data */
+    EWIFI,              /*!< Send format to WIFI thread. */
+    SAPMS_END,          /*!< Enum end */
 /*@}*/
 }SAPMS_e;
 
@@ -46,15 +53,39 @@ typedef enum
  */
 typedef struct SAPMS
 {
-    SAPMS_e eSRC;
+/*@{*/
+    SAPMS_e eSRC;   /*!< Enum for collecting incomming Queue values */
+    /** @name  SAPMS.sPM */
     struct
     {
-        float fPM1;
-        float fPM25;
-        float fPM10;
-    } sPM;
+    /*@{*/
+        float fPM1; /*!< PM 1[um] float value   */
+        float fPM25;/*!< PM 2.5[um] float value */
+        float fPM10;/*!< PM 10[um] float value  */
+    /*@}*/
+    } sPM; 
+
+    /** @name  SAPMS.sENS */
+    struct 
+    {
+    /*@{*/
+        float fCO2; /*!< ENS160 CO2 float value  */
+        float fTVOC;/*!< ENS160 TVOC float value */
+        //uint8_t AQI;
+    /*@}*/
+    }sENS;
     
-    /** @todo Add other sensors as they are finisehd*/
+    /** @name  SAPMS.sTEM */
+    struct
+    {
+    /*@{*/
+        float fTemp; /*!< AM2320 Temperature flaot value  */
+        float fHum;  /*!< AM2320 Humidity flaot value  */
+    /*@}*/
+    }sAM;
+    
+    /** @todo Add other sensors as they are finisehd */
+/*@}*/
 }SAPMS_t;
 
 /*******************************************************************************

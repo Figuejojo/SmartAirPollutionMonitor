@@ -12,14 +12,15 @@
 * Includes
 *******************************************************************************/
 #include <FreeRTOS.h>
-#include <FreeRTOS-Kernel/include/queue.h>
+#include <queue.h>
 #include <task.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
 #include "pico/stdlib.h"
 
-// Pico Peripherals
+
+// Pico Peripherals/
 #include "hardware/uart.h"
 
 // Debug includes
@@ -29,14 +30,20 @@
 /*******************************************************************************
 * Macro Definitions
 *******************************************************************************/
-#define ENABLE_DEBUG (1)    /*!< On/Off Debug prints */
+#define SAPM_ID     "001"
+    
+/*  WIFI Elements  */
+#define USE_WIRELESS (0)    /*!< On/Off Wireless Task. If wireless is on go to WIFI/IoT_conig.h */
+#define WATCHDOG_ON  (0)    /*!< On/Off Watchdog for WIFI */                     
 
-#define USE_WIRELESS (0)    /*!< On/Off Wireless Task */
-
+/* Sensor Elements */
 #define USE_AM2320   (0)    /*!< On/Off AM2320  Task */
 #define USE_ADA746   (1)    /*!< On/Off ADA746  Task */
 #define USE_PMS5003  (0)    /*!< On/Off PMS5003 Task */
 #define USE_SEN0515  (0)    /*!< On/Off ENS160  Task */
+
+/* Develop Elements*/
+#define ENABLE_DEBUG (1)    /*!< On/Off Debug prints */
 
 /*******************************************************************************
 * Type definitions
@@ -50,10 +57,15 @@
 typedef enum FUNC_ERRORS
 {
 /*@{*/
-    ER_CHECKSUM     = -1,   /*!< Checksum Error */
-    ER_GEN          = 0,    /*!< Generic Error  */
-    NO_ERROR        = 1,    /*!< No Error       */
-    ER_END,
+    NO_ERROR        = 1,    /*!< No Error           */
+    ER_GEN          = 0,    /*!< Generic Error      */
+    //Errors
+    ER_CHECKSUM     = -1,   /*!< Checksum Error     */
+    //  I2C Errors
+    ER_I2C_ID       = -2,   /*!< I2C ID Error      */
+    ER_I2C_GEN      = -3,   /*!< I2C Generic Error */
+    // WIFI Errors
+    ER_WIFI         =- 2,   /*!< Wifi Error*/
 /*@}*/
 }ERR_t;
 
