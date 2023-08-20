@@ -56,8 +56,7 @@ void vTaskGPS(void * pvParameters)
     while(1)
     {
         err = NO_ERROR;
-        Print_debug("MSG GPS");
-        vTaskDelay(10000/portTICK_PERIOD_MS);
+        vTaskDelay(120000/portTICK_PERIOD_MS);
         if (data_received) 
         {
             // parse the received data
@@ -65,9 +64,7 @@ void vTaskGPS(void * pvParameters)
             if(err >= 0)
             {
                 get_lat_lon(AdaData,&ADAmsg);
-
-                printf("%f\n",ADAmsg.sADA.fLat);
-                printf("%f\n",ADAmsg.sADA.fLong);
+                vCollectData(&ADAmsg,EGPS);
             }
             else
             {
@@ -133,7 +130,7 @@ ERR_t parse_gprmc_data(const char *data, ada_t *outData)
     char longitude[11];
     char in_EW[2];
     char altitude[7];
-    printf("Data is: %s",data);
+    //printf("Data is: %s",data);
     // Check if it is GPRMC data
     if (strncmp(data, "$GPRMC", 6) == 0) 
     {

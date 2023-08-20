@@ -32,6 +32,8 @@ void vTaskProcess(void * pvParameters)
 {
     SAPMS_t xQdata = {0};
     SAPMS_t cacheData = {0};
+    cacheData.sADA.fLat = 53.94970313639218;     //Default GPS location
+    cacheData.sADA.fLong= -1.0516810887758052;   //Default GPS location
     uint8_t msg[200] = {0};
     uint8_t minutes = 0;
     //uint8_t JSON[500];
@@ -62,9 +64,20 @@ void vTaskProcess(void * pvParameters)
                 cacheData.sAM.fTemp = (cacheData.sAM.fTemp + xQdata.sAM.fTemp)/isSampleTwo[EAM];
                 isSampleTwo[EAM] = (isSampleTwo[EAM]==1) ? 2 : isSampleTwo[EAM];
                 sprintf(msg,"Hum %0.1f ,Temp %0.1f",cacheData.sAM.fHum, cacheData.sAM.fTemp);
-
                 break;
 
+            case EGPS:
+
+                if((xQdata.sADA.fLat > cacheData.sADA.fLat + 0.0004 || xQdata.sADA.fLat < cacheData.sADA.fLat - 0.004)
+                    &&(xQdata.sADA.fLong > cacheData.sADA.fLong + 0.0004 || xQdata.sADA.fLong < cacheData.sADA.fLong - 0.004))
+                {
+                    cacheData.sADA.fLat = xQdata.sADA.fLat;
+                    cacheData.sADA.fLong= xQdata.sADA.fLong;
+                    printf("GPS Changed!");
+                }
+                sprintf(msg,"Lat: %0.4f ,Lon: %0.4f",cacheData.sADA.fLat, cacheData.sADA.fLong);
+                break;
+                
             case EWIFI:
                 minutes++; 
                 alarm_in_us(TIME2WIFI);
@@ -111,7 +124,7 @@ void vTaskProcess(void * pvParameters)
                     cacheData.sENS.fTVOC = 0;
                 }
                 //53.94970313639218, -1.0516810887758052
-                sprintf(msg,"%s&lat=53.94970313639218&long=-1.0516810887758052",msg);
+                sprintf(msg,"%s&lat=%0.48f&long=%0.4f",msg,cacheData.sADA.fLat,cacheData.sADA.fLong);
                 publish(msg);
 #endif
 #if 0
