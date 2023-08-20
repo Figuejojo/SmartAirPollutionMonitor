@@ -8,6 +8,7 @@
 #include "pico/stdlib.h"
 #include "hardware/uart.h"
 #include "hardware/irq.h"
+#include "WIFI/process.h"
 
 /*******************************************************************************
 * Static & Global Variables
@@ -30,8 +31,9 @@ volatile char receive_buffer[BUFFER_SIZE];
 volatile uint8_t receive_index = 0;
 volatile bool data_received = false;
 
-void parse_gprmc_data(const char *data);
-void on_uart_rx();
+static ERR_t parse_gprmc_data(const char *data, ada_t *AdaData);
+static void get_lat_lon(ada_t inData,SAPMS_t * outData);
+static void on_uart_rx();
 
 /**
 *	@name vTaskGPS
@@ -40,27 +42,39 @@ void on_uart_rx();
 void vTaskGPS(void * pvParameters)
 {
     const uint8_t cStandByCmd[] = {0x24,0x50,0x4D,0x54,0x4B,0x31,0x36,0x31,0x2C,0x30,0x2A,0x32,0x38,0x0D,0x0A,0xFE};
-    //const uint8_t cStandByCmd[] = {'$','P','M','T','K','1','6','1','0','*','2','8','\r','\n'};
+    const uint8_t cRMCCmd[] = "$PMTK314,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0*290\r\n";
+    const uint8_t * ptrCMD = cStandByCmd;
+    ada_t AdaData = {0};
+    SAPMS_t ADAmsg = {0};
+    ERR_t err;
+    while(*ptrCMD!=0xFE)
+    {
+        uart_putc(ADA_USART, *ptrCMD);
+        ptrCMD++;  
+    }
+
     while(1)
     {
+        err = NO_ERROR;
         Print_debug("MSG GPS");
-        const uint8_t * ptrCMD = cStandByCmd;
-        while(*ptrCMD!=0xFE)
-        {
-            uart_putc(ADA_USART, *ptrCMD);
-            ptrCMD++;  
-        }
-
+        vTaskDelay(10000/portTICK_PERIOD_MS);
         if (data_received) 
         {
-            Print_debug("Data Recv: ");
-            // print received data
-            uart_puts(UART_ID,(const char*)(receive_buffer));
-            data_received = false;
             // parse the received data
-            parse_gprmc_data((const char*)receive_buffer);
+            err = parse_gprmc_data((const char*)receive_buffer, &AdaData);
+            if(err >= 0)
+            {
+                get_lat_lon(AdaData,&ADAmsg);
+
+                printf("%f\n",ADAmsg.sADA.fLat);
+                printf("%f\n",ADAmsg.sADA.fLong);
+            }
+            else
+            {
+                Print_debug("GPS Satelite error");
+            }
+            data_received = false;
         }
-        vTaskDelay(5000/portTICK_PERIOD_MS);
     }
 }
 
@@ -76,7 +90,7 @@ void GPS_setup(void)
     // Uart pin setup
     gpio_set_function(ADA_TX, GPIO_FUNC_UART);
     gpio_set_function(ADA_RX, GPIO_FUNC_UART);
-//Interrupt part//
+    //Interrupt part//
     // close hardware flow
     uart_set_hw_flow(UART_ID, false, false);
     // set data format
@@ -91,10 +105,10 @@ void GPS_setup(void)
 #endif
 }
 
-
 // Serial receive interrupt
 void on_uart_rx() {
-    while (uart_is_readable(UART_ID)) {
+    while (uart_is_readable(UART_ID)) 
+    {
         char data = uart_getc(UART_ID);
         
         // Store the received data into the buffer
@@ -111,48 +125,57 @@ void on_uart_rx() {
 }
 
 // Parse GPRMC data and extract time, date, latitude, longitude and altitude information
-void parse_gprmc_data(const char *data) {
-    char time[7];
+ERR_t parse_gprmc_data(const char *data, ada_t *outData)
+{
+    ERR_t err = NO_ERROR;
     char latitude[10];
+    char in_NS[2];
     char longitude[11];
-    char date[7];
+    char in_EW[2];
     char altitude[7];
-    char msg[30];
     printf("Data is: %s",data);
     // Check if it is GPRMC data
-    if (strncmp(data, "$GPRMC", 6) == 0) {
+    if (strncmp(data, "$GPRMC", 6) == 0) 
+    {
         // Separate the GPRMC data with commas to extract the required information
         char *token;
         int count = 0;
         char *data_copy = strdup(data); 
-// Make a copy of the data so as not to destroy the original
+        // Make a copy of the data so as not to destroy the original
         token = strtok(data_copy, ",");
         while (token != NULL) 
         {
-            if (count == 1) 
+            if(count == 2)
             {
-                // Time information (format: hhmmss)
-                strncpy(time, token, 6);
-                time[6] = '\0';
-            } 
+                if(token[0] == 'V')
+                {
+                    return ER_GPS_V;
+                }
+            }
             else if (count == 3) 
             {
                 // Latitude information (format: ddmm.mmmm)
-                strncpy(latitude, token, 9);
-                latitude[9] = '\0';
+                strncpy(outData->lat, token, 9);
+                outData->lat[9] = '\0';
             } 
+            else if (count == 4)
+            {
+                // NS 
+                strncpy(outData->isN, token, 1);
+                in_NS[2] = '\0';               
+            }
             else if (count == 5) 
             {
                 // Longitude information (format: dddmm.mmmm)
-                strncpy(longitude, token, 10);
-                longitude[10] = '\0';
-            } 
-            else if (count == 9) 
+                strncpy(outData->lon, token, 10);
+                outData->lon[10] = '\0';
+            }
+            else if (count == 6)
             {
-                // Date information (format: ddmmyy)
-                strncpy(date, token, 6);
-                date[6] = '\0';
-            } 
+                // NS 
+                strncpy(outData->isE, token, 1);
+                outData->isE[2] = '\0';  
+            }
             else if (count == 8) 
             {
                 // altitude information
@@ -163,12 +186,32 @@ void parse_gprmc_data(const char *data) {
             token = strtok(NULL, ",");
         }
         free(data_copy);
-
-        printf("Time %s, Lat %s, Long %s",time,latitude,longitude);
+        //printf("Lat %s %c, Long %s %c\n",outData->lat,outData->isN[0],outData->lon,outData->isE[0]);
 
     } 
     else
     {
         printf("Invalid GPRMC data.\n");
+        err = ER_GPS_I;
     }
+    return err;
+}
+
+void get_lat_lon(ada_t inData,SAPMS_t * outData)
+{    
+    char Degrees[4] = {0};
+    char Minutes[8] = {0};
+
+    strncpy(Degrees,inData.lat,2);
+    strncpy(Minutes,inData.lat+2,7);
+    
+    float lat_dd = atoi(Degrees) + atof(Minutes) / 60.0f;
+    
+    strncpy(Degrees,inData.lon,3);
+    strncpy(Minutes,inData.lon+3,7);
+    
+    float lon_dd = atoi(Degrees) + atof(Minutes) / 60.0f;
+
+    outData->sADA.fLat = (inData.isN[0] == 'N')?(lat_dd):(-lat_dd);
+    outData->sADA.fLong= (inData.isE[0] == 'E')?(lon_dd):(-lon_dd);
 }

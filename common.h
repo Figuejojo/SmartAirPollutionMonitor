@@ -65,7 +65,10 @@ typedef enum FUNC_ERRORS
     ER_I2C_ID       = -2,   /*!< I2C ID Error      */
     ER_I2C_GEN      = -3,   /*!< I2C Generic Error */
     // WIFI Errors
-    ER_WIFI         =- 2,   /*!< Wifi Error*/
+    ER_WIFI         =- 2,   /*!< Wifi Error         */
+    // GPS Errprs
+    ER_GPS_V        = -3,   /*!< No GPS Signal      */
+    ER_GPS_I        = -4    /*!< Invalida GPS Data  */
 /*@}*/
 }ERR_t;
 

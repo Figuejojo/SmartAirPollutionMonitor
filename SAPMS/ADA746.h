@@ -14,14 +14,25 @@
 #include "common.h"
 
 /*******************************************************************************
-* Type definitions
+* Macros
 *******************************************************************************/
 #define ADA_TX (0)  // Raspberry Pi Pico Pin for TXD
 #define ADA_RX (1)  // Raspberry Pi Pico Pin for RXD
 
-#define ADA_BAUD  (9600)
+#define ADA_BAUD  (9600)    // !<BaudRate
 
 #define ADA_USART (uart0)  /*!< UART interface            */
+
+/*******************************************************************************
+* Type definitions
+*******************************************************************************/
+typedef struct ADA746
+{
+    char lat[10];
+    char isN[2];
+    char lon[11];
+    char isE[2];
+}ada_t;
 
 /*******************************************************************************
 * Function Prototypes
