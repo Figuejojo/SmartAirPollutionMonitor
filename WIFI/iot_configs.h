@@ -7,13 +7,13 @@
 #ifndef _IOT_CONFIG_H_
 #define _IOT_CONFIG_H_
 
-#define MQTT_TS  (0)
+#define MQTT_TS  (1)
 #define HTTP_TS  (0)
 #define AZ_TS    (0)
 
 // Wifi
-#define IOT_CONFIG_WIFI_SSID "<SSID>"    //Write the Wifi username  
-#define IOT_CONFIG_WIFI_PASSWORD "<PWD>" //Write the Wifi password
+#define IOT_CONFIG_WIFI_SSID "JJRAZER"    //Write the Wifi username  
+#define IOT_CONFIG_WIFI_PASSWORD "#JJRZ12345" //Write the Wifi password
 
 //Thinkspeak
 #if(HTTP_TS == 1)
@@ -31,10 +31,10 @@
     #define ENDPOINT ""
 #elif(MQTT_TS == 1)
     #define ENDPOINT   "mqtt3.thingspeak.com" 
-    #define IOT_CLIENT "<Client ID>"
-    #define IOT_USER   "<User ID(Same as Client ID)>"
-    #define IOT_PWD    "<Password>"
-    #define IOT_TOPIC  "<Topic/Subtopic>"
+    #define IOT_CLIENT "BB0LESonGRMgECAlBSYXCDM"
+    #define IOT_USER   "BB0LESonGRMgECAlBSYXCDM"
+    #define IOT_PWD    "aYo8JGbT29UoXxJ9lyX2NUpO"
+    #define IOT_TOPIC  "channels/2241155/publish"
 #else
     #define IOT_TOPIC  "<Topic/PlaceHold>"
     #define IOT_CLIENT "<PlaceHolder>"
