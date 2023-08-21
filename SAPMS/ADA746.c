@@ -32,7 +32,7 @@ volatile uint8_t receive_index = 0;
 volatile bool data_received = false;
 
 static ERR_t parse_gprmc_data(const char *data, ada_t *AdaData);
-static bool get_lat_lon(ada_t inData,SAPMS_t * outData);
+static void get_lat_lon(ada_t inData,SAPMS_t * outData);
 static void on_uart_rx();
 
 /**
@@ -63,6 +63,7 @@ void vTaskGPS(void * pvParameters)
             err = parse_gprmc_data((const char*)receive_buffer, &AdaData);
             if(err >= 0)
             {
+                get_lat_lon(AdaData,&ADAmsg);
                 vCollectData(&ADAmsg,EGPS);
             }
             else
@@ -193,7 +194,7 @@ ERR_t parse_gprmc_data(const char *data, ada_t *outData)
     return err;
 }
 
-bool get_lat_lon(ada_t inData,SAPMS_t * outData)
+void get_lat_lon(ada_t inData,SAPMS_t * outData)
 {    
     char Degrees[4] = {0};
     char Minutes[8] = {0};

@@ -55,27 +55,27 @@ int main()
     ******************/
 
    //These tasks are always created.
-    xTaskCreate(TaskLEDBlinkvoid,"Ledblink",256,NULL,1,NULL);
-    xTaskCreate(vTaskProcess,"DataProcess",256*2,NULL,2,NULL);
+    xTaskCreate(TaskLEDBlinkvoid,"Ledblink",256,NULL,2,NULL);
+    xTaskCreate(vTaskProcess,"DataProcess",256,NULL,2,NULL);
 
     // These tasks can be turn on/off by using the macros on common.h file.
 #if USE_WIRELESS == 1
-    xTaskCreate(vTaskWireless,"Wireless",256,NULL,2,NULL);
+    xTaskCreate(vTaskWireless,"Wireless",256,NULL,1,NULL);
 #endif
 #if USE_ADA746 == 1
-    xTaskCreate(vTaskGPS,"GPSTask",256,NULL,1,NULL);
+    xTaskCreate(vTaskGPS,"GPSTask",256,NULL,2,NULL);
 #endif
 #if USE_AM2320 == 1
-    xTaskCreate(vTask_AM2320,"TempAndHumd",256,NULL,1,NULL);
+    xTaskCreate(vTask_AM2320,"TempAndHumd",256,NULL,2,NULL);
 #endif
 #if USE_PMS5003 == 1
-    xTaskCreate(vTaskPMS5003,"PM2and10um",256,NULL,1,NULL);
+    xTaskCreate(vTaskPMS5003,"PM2and10um",256,NULL,2,NULL);
 #endif
 #if USE_SEN0515 == 1
-    xTaskCreate(vTaskSEN0515,"TVOC&CO2",256,NULL,1,NULL);
+    xTaskCreate(vTaskSEN0515,"TVOC&CO2",256,NULL,2,NULL);
 #endif
 #if ENABLE_DEBUG // Only if the debug flag is set.
-    xTaskCreate(TaskDebugPrint, "DebugUSBPrint", 256, NULL, 1, NULL);
+    xTaskCreate(TaskDebugPrint, "DebugUSBPrint", 256, NULL, 2, NULL);
 #endif
 
     //Start FreeRTOS

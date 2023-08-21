@@ -83,7 +83,7 @@ void vTaskWireless(void * pvParameters)
         svMQTTConnect();
       }
     }
-    vTaskDelay(2000/portTICK_PERIOD_MS);
+    vTaskDelay(3000/portTICK_PERIOD_MS);
   }
 }
 

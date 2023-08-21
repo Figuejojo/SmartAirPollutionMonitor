@@ -124,8 +124,7 @@ void vTaskProcess(void * pvParameters)
                     cacheData.sENS.fTVOC = 0;
                 }
                 //53.94970313639218, -1.0516810887758052
-                sprintf(msg,"%s&lat=%0.4f&long=%0.4f",msg,cacheData.sADA.fLat,cacheData.sADA.fLong);
-                vTaskDelay(500/portTICK_PERIOD_MS);
+                sprintf(msg,"%s&lat=%0.48f&long=%0.4f",msg,cacheData.sADA.fLat,cacheData.sADA.fLong);
                 publish(msg);
 #endif
 #if 0
