@@ -70,6 +70,7 @@ void vTaskGPS(void * pvParameters)
             {
                 Print_debug("GPS Satelite error");
             }
+            memset((void*)receive_buffer,0,sizeof(receive_buffer));
             data_received = false;
         }
     }
@@ -104,19 +105,34 @@ void GPS_setup(void)
 
 // Serial receive interrupt
 void on_uart_rx() {
-    while (uart_is_readable(UART_ID)) 
+    if(uart_is_readable(UART_ID)) 
     {
+        static bool start = false;
         char data = uart_getc(UART_ID);
         
-        // Store the received data into the buffer
-        receive_buffer[receive_index] = data;
-        receive_index++;
-        
-        // Check if a terminator was received (assumed to be '\n')
-        if (data == '\n' || receive_index >= BUFFER_SIZE - 1) {
-            receive_buffer[receive_index] = '\0'; // Null-terminate the string
-            data_received = true;
-            receive_index = 0;
+        if(data == '$' && start == false && data_received == false)
+        {
+            // Store the received data into the buffer
+            receive_buffer[receive_index] = data;
+            receive_index++;
+            start = true;
+        }
+        else if(start == true)
+        {
+            // Check if a terminator was received (assumed to be '\n')
+            if (data == '\n' || receive_index >= BUFFER_SIZE - 1) 
+            {
+                receive_buffer[receive_index] = '\0'; // Null-terminate the string
+                data_received = true;
+                start = false;
+                receive_index = 0;
+            }
+            else
+            {
+                // Store the received data into the buffer
+                receive_buffer[receive_index] = data;
+                receive_index++;
+            }
         }
     }
 }
@@ -189,9 +205,9 @@ ERR_t parse_gprmc_data(const char *data, ada_t *outData)
     else
     {
         printf("Invalid GPRMC data.\n");
-        err = ER_GPS_I;
+        return ER_GPS_I;
     }
-    return err;
+    return NO_ERROR;
 }
 
 void get_lat_lon(ada_t inData,SAPMS_t * outData)
