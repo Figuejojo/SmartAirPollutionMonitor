@@ -56,7 +56,7 @@ int main()
 
    //These tasks are always created.
     xTaskCreate(TaskLEDBlinkvoid,"Ledblink",256,NULL,2,NULL);
-    xTaskCreate(vTaskProcess,"DataProcess",256,NULL,2,NULL);
+    xTaskCreate(vTaskProcess,"DataProcess",256*2,NULL,2,NULL);
 
     // These tasks can be turn on/off by using the macros on common.h file.
 #if USE_WIRELESS == 1

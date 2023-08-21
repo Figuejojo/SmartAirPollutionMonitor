@@ -32,8 +32,8 @@ void vTaskProcess(void * pvParameters)
 {
     SAPMS_t xQdata = {0};
     SAPMS_t cacheData = {0};
-    cacheData.sADA.fLat = 53.94970313639218;     //Default GPS location
-    cacheData.sADA.fLong= -1.0516810887758052;   //Default GPS location
+    cacheData.sADA.fLat = 53.9567;//53.94970313639218;     //Default GPS location
+    cacheData.sADA.fLong= -1.0746; //-1.0516810887758052;   //Default GPS location
     uint8_t msg[200] = {0};
     uint8_t minutes = 0;
     //uint8_t JSON[500];
@@ -68,12 +68,16 @@ void vTaskProcess(void * pvParameters)
 
             case EGPS:
 
-                if((xQdata.sADA.fLat > cacheData.sADA.fLat + 0.0004 || xQdata.sADA.fLat < cacheData.sADA.fLat - 0.004)
-                    &&(xQdata.sADA.fLong > cacheData.sADA.fLong + 0.0004 || xQdata.sADA.fLong < cacheData.sADA.fLong - 0.004))
+                if(xQdata.sADA.fLat > cacheData.sADA.fLat + 0.0004 || xQdata.sADA.fLat < cacheData.sADA.fLat - 0.0004)
                 {
                     cacheData.sADA.fLat = xQdata.sADA.fLat;
+                    printf("GPS Lat Changed!");
+
+                }
+                if(xQdata.sADA.fLong > cacheData.sADA.fLong + 0.0004 || xQdata.sADA.fLong < cacheData.sADA.fLong - 0.0004)
+                {  
+                    printf("GPS Lon Changed!");
                     cacheData.sADA.fLong= xQdata.sADA.fLong;
-                    printf("GPS Changed!");
                 }
                 sprintf(msg,"Lat: %0.4f ,Lon: %0.4f",cacheData.sADA.fLat, cacheData.sADA.fLong);
                 break;
@@ -124,7 +128,7 @@ void vTaskProcess(void * pvParameters)
                     cacheData.sENS.fTVOC = 0;
                 }
                 //53.94970313639218, -1.0516810887758052
-                sprintf(msg,"%s&lat=%0.48f&long=%0.4f",msg,cacheData.sADA.fLat,cacheData.sADA.fLong);
+                sprintf(msg,"%s&lat=%0.4f&long=%0.4f",msg,cacheData.sADA.fLat,cacheData.sADA.fLong);
                 publish(msg);
 #endif
 #if 0
