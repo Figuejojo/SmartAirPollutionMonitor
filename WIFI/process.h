@@ -93,7 +93,6 @@ typedef struct SAPMS
     /*@}*/
     }sADA;
 
-    /** @todo Add other sensors as they are finisehd */
 /*@}*/
 }SAPMS_t;
 
